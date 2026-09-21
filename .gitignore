@@ -1,0 +1,55 @@
+# Unity: dados regenerados e resultados locais
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Bb]uild/
+/[Bb]uilds/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+/[Aa]ssets/AssetStoreTools*
+/Assets/netcode-build-assets-temp/
+/Assets/netcode-build-assets-temp.meta
+
+# IDEs e arquivos gerados pelo Unity
+/.vs/
+/.idea/
+/.vscode/
+*.csproj
+*.sln
+*.slnx
+*.user
+*.suo
+*.pidb
+*.booproj
+*.unityproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+sysinfo.txt
+crashlytics-build.properties
+
+# Segredos e sistema operacional
+.env
+.env.*
+!.env.example
+*.pem
+*.pfx
+*.key
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Graphify: versionar somente o mapa e o relatorio portaveis.
+/graphify-out/*
+!/graphify-out/graph.json
+!/graphify-out/GRAPH_REPORT.md
+
+# Assets/, Packages/ e ProjectSettings/ devem ser versionados.
+# Arquivos .meta e cenas/prefabs não são ignorados.
