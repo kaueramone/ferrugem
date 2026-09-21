@@ -1,4 +1,5 @@
 param(
+    [switch]$Fps,
     [string]$Executable = (Join-Path $PSScriptRoot '../Builds/Windows/Ferrugem.exe'),
     [ValidateRange(1024, 65535)][int]$Port = 17979
 )
@@ -10,6 +11,7 @@ $runDirectory = Join-Path $projectRoot ('Logs/Smoke/' + (Get-Date -Format 'yyyyM
 New-Item -ItemType Directory -Path $runDirectory -Force | Out-Null
 $startedProcesses = [System.Collections.Generic.List[System.Diagnostics.Process]]::new()
 $checks = [System.Collections.Generic.List[string]]::new()
+. (Join-Path $PSScriptRoot 'Assert-FpsSmoke.ps1')
 
 function Assert-Smoke([bool]$Condition, [string]$Message) {
     if (-not $Condition) { throw $Message }
@@ -31,6 +33,7 @@ function Read-SmokeLog([string]$Name) {
 function Start-SmokePlayer([string]$Name, [string[]]$PlayerArguments) {
     $logPath = Join-Path $runDirectory "$Name.log"
     $arguments = @('-batchmode', '-nographics', '-logFile', ('"' + $logPath + '"')) + $PlayerArguments
+    if ($Fps -and $Name -in @('server','client-a','client-b')) { $arguments += '--fps-smoke' }
     $process = Start-Process -FilePath $executablePath -ArgumentList $arguments -WorkingDirectory (Split-Path $executablePath) -WindowStyle Hidden -PassThru
     $startedProcesses.Add($process)
     return $process
@@ -89,6 +92,10 @@ try {
         $clientLog = Read-SmokeLog $clientName
         Assert-Smoke ($clientLog -match 'START role=client' -and $clientLog -notmatch 'world=FerrugemServer|LISTEN_RESULT') "$clientName executou somente papel cliente."
         Assert-Smoke ($clientLog -notmatch 'Exception:|CYCLE_INCOMPLETE|START_FAILED') "$clientName sem falha runtime no caminho positivo."
+    }
+
+    if ($Fps) {
+        Assert-FpsSmoke -ServerLog (Read-SmokeLog 'server') -ClientALog (Read-SmokeLog 'client-a') -ClientBLog (Read-SmokeLog 'client-b') -Assert { param($condition, $message) Assert-Smoke $condition $message }
     }
 
     $invalidCases = @(

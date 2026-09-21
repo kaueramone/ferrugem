@@ -32,6 +32,7 @@ if [[ "$1" == "--stop" ]]; then
 fi
 
 executable="$1"; address="$2"; port="$3"; log="$4"; record="$5"; duration="$6"
+shift 6
 chmod u+x "$executable"
 printf '%s %s\n' "$$" "$(awk '{print $22}' "/proc/$$/stat")" > "$record"
-exec "$executable" -batchmode -nographics --server --address "$address" --port "$port" --quit-after "$duration" -logFile "$log"
+exec "$executable" -batchmode -nographics --server --address "$address" --port "$port" --quit-after "$duration" -logFile "$log" "$@"

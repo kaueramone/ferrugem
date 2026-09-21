@@ -11,6 +11,9 @@
 /[Aa]ssets/AssetStoreTools*
 /Assets/netcode-build-assets-temp/
 /Assets/netcode-build-assets-temp.meta
+# Unity Entities: Unity.Scenes/SceneWithBuildConfigurationGUIDs.cs gera este cache.
+/Assets/SceneDependencyCache/
+/Assets/SceneDependencyCache.meta
 
 # IDEs e arquivos gerados pelo Unity
 /.vs/

@@ -2,15 +2,16 @@
 
 Nome provisório. Jogo multiplayer PvPvE de três grupos de sobreviventes, captura de zona central e transporte de recursos. Planejado em Unity com participação de IA no desenvolvimento e revisão humana.
 
-**Estado desta fundação: fases 0 e 1 de conexão concluídas.** Dois clientes Windows conectaram ao servidor dedicado Linux no WSL, com reconexão e rejeição de protocolo incompatível validadas. A compilação limpa e o teste local Windows também passaram. Há avisos de temporização e alocação no log Linux a investigar; capacidade para 100 jogadores, gameplay e hospedagem em VPS ainda não foram demonstrados.
+**Estado: fases 0 e 1 de conexão concluídas; marco 2A FPS validado; marco 2B de combate com testes automáticos aprovados.** O campo de testes agora possui movimentação em primeira pessoa e personagem civil visível para o outro cliente. O teste FPS com servidor Linux passou em 27 verificações; o teste anterior de diagnóstico com servidor Windows passou em 36. O usuário confirmou o teste manual do FPS. A versão 0.2.0 passou em 51 verificações de combate e 27 de regressão FPS contra o servidor Linux; uma inspeção visual parcial confirmou HUD, arma, infectados e barris. O playtest completo de combate pelo usuário continua pendente. Veículos, destruição, capacidade para 100 jogadores e hospedagem em VPS continuam pendentes. Consulte os [marcos da fase 2](Docs/FASE-2.md) para escopo e evidências.
 
 ## Para começar
 
-- Para testar no Windows, feche o Unity e dê dois cliques em **`Testar-Ferrugem.bat`**. O launcher verifica os arquivos do projeto, compila quando necessário e abre dois clientes com um servidor local. Feche as duas janelas para encerrar o teste. Ainda é uma cena de diagnóstico de conexão, sem gameplay.
-- Para testar os clientes Windows contra o servidor dedicado Linux no WSL, use **`Testar-Servidor-Linux.bat`**. O modo padrão é automático; `-Manual` abre duas janelas. É necessário Ubuntu-24.04 funcionando no WSL 2. Consulte os [comandos e resultados](Docs/COMO-TESTAR.md).
+- Para testar, feche o Unity e dê dois cliques em **`Testar-Ferrugem.bat`**. O launcher verifica os arquivos do projeto, compila quando necessário e abre dois clientes Windows conectados ao servidor dedicado Linux no WSL. Use WASD, Shift e mouse; Esc libera o cursor. No marco 2B, clique dispara, R recarrega e G lança uma carga explosiva. Feche as duas janelas para encerrar o teste. É necessário Ubuntu-24.04 funcionando no WSL 2.
+- **`Testar-Ferrugem.bat -Smoke -Fps`** executa os testes automáticos FPS no mesmo servidor Linux. O launcher **`Testar-Servidor-Linux.bat`** continua disponível; seu padrão é automático e `-Manual` abre as janelas. Servidor Windows fica apenas como diagnóstico opcional. Consulte os [comandos e resultados](Docs/COMO-TESTAR.md).
 - A pasta de trabalho é `C:\Dev\Ferrugem`, fora do OneDrive para evitar sincronização dos arquivos temporários do Unity.
 - O [planejamento fundador](Docs/Planejamento/README.md) explica o jogo. O [registro das fases 0 e 1](Docs/FASES-0-1.md) separa decisões e validações pendentes.
 - [Como testar](Docs/COMO-TESTAR.md) contém os comandos de build, teste automatizado e conexão manual.
+- [Assets do protótipo](Docs/ASSETS-PROTOTIPO.md) registra o modelo civil gratuito, autoria, licença e direção low poly sóbria.
 - O Editor deste projeto é **Unity 6000.3.24f1**. A licença foi resolvida pelo Editor após a ativação feita pelo usuário. Não abra outra instância sobre esta pasta durante a importação ou compilação automatizada.
 - `Assets` guarda cenas e código; `Packages` fixa dependências; `ProjectSettings` guarda configurações. `Library` é um cache local, recriado pelo Editor.
 - Git registra alterações locais. Git LFS armazena versões de arquivos de arte grandes; ele está ativado somente neste repositório. O remoto `origin` aponta para [kaueramone/ferrugem](https://github.com/kaueramone/ferrugem), e a branch desta fundação é `feat/unity-foundation`.

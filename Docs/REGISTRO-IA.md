@@ -10,7 +10,29 @@ Este projeto utiliza IA como assistência ao planejamento e ao desenvolvimento. 
 | 21/09/2026 | Scripts e documentação de testes | IA escreveu scripts PowerShell de smoke test e exportação limpa, documentou comandos e decisões de versões | Smoke Windows aprovado na origem e no executável compilado de exportação limpa; exportador corrigido para impedir captura de assets transitórios durante build |
 | 21/09/2026 | Adaptação de exemplo oficial | Padrões de HelloNetcode adaptados com assistência de IA | Origem e Unity Companion License registradas em `Assets/ThirdParty/HelloNetcode`; isso não transfere autoria do exemplo oficial para o projeto |
 | 21/09/2026 | Launcher e validação Linux/WSL | IA criou launcher, extraiu helpers compartilhados de build, implementou cleanup por identidade de processo e revisou o limite de FPS do servidor | Smoke Linux aprovado em 14 verificações com dois clientes Windows; regressão Windows aprovada em 23. Avisos de temporização inicial e quatro alocações persistentes no encerramento continuam em investigação |
+| 21/09/2026 | Marco 2A FPS | IA escreveu/adaptou simulação de movimento, criação e remoção dos personagens de rede, câmera FPS, apresentação, importação do modelo e testes automatizados | Windows `-Smoke -Fps` aprovado em 36 verificações e Linux em 27; teste manual confirmado pelo usuário e encerramento limpo em cinco verificações. Servidor Linux passa a ser o padrão dos lançadores. Combate e zombies não foram implementados neste marco |
+| 21/09/2026 | Modelo civil e animações de terceiros | IA pesquisou fontes e integrou `Male_LongSleeve` do Animated Men Pack, aplicando materiais sóbrios e escala de apresentação | Modelo e animações são de Quaternius, sob CC0; arquivos originais, licença e procedência preservados em `Assets/ThirdParty/QuaterniusAnimatedMen`. Não são arte gerada por IA pelo Ferrugem |
 
-Nesta etapa não foram gerados novos assets de arte, áudio ou personagens por IA. A cena usa primitivas do Unity e recursos do template URP. A revisão independente citada acima também foi feita por IA; não representa aprovação humana do produto. O usuário realizou a ativação da licença Unity e criou o repositório remoto.
+Até o marco 2A, não foram gerados modelos, texturas ou áudio por IA. A cena utiliza primitivas do Unity, recursos do template URP e o civil de Quaternius; o código de apresentação e as escolhas de materiais tiveram assistência de IA. A revisão independente citada acima também foi feita por IA; não representa aprovação humana do produto. O usuário realizou a ativação da licença Unity, criou o repositório remoto e confirmou os testes de conexão anteriores.
 
 Ao incorporar arte, áudio, texto ou outro conteúdo ao produto, adicionar origem, ferramenta, revisão humana e evidência de licença. Este registro não representa uma declaração submetida à Steam; o questionário aplicável será preenchido na preparação da publicação.
+
+### Marco 2B — testes automáticos aprovados
+
+Em 21/09/2026, IA assistiu a implementação da simulação de combate, regras dos
+infectados, HUD e apresentação de arma, carga e barril com primitivas Unity. O
+modelo civil existente foi reaproveitado visualmente para o infectado, com cores
+dessaturadas e antecipação provisória de ataque. O arquivo FBX original permanece
+inalterado; modelo e animações continuam sendo de Quaternius (CC0).
+
+A geometria provisória criada por código com assistência de IA faz parte desta
+nova apresentação. Não foram gerados novos arquivos de imagem, textura, áudio ou
+FBX por um modelo generativo. Isso atualiza o escopo do registro anterior, sem
+atribuir autoria de assets de terceiros à IA ou ao Ferrugem. A versão 0.2.0 passou em 51 verificações de combate Linux (`Logs/LinuxSmoke/20260921-224225-102/result.json`) e 27 de regressão FPS (`Logs/LinuxSmoke/20260921-225105-368/result.json`), ambas com saída 0. O teste de combate inclui cenários controlados e inputs de disparo/recarga reais; o playtest manual do marco 2B continua pendente. O aviso conhecido de quatro alocações persistentes do Unity ao encerrar segue em investigação.
+
+A inspeção visual parcial da sessão `Logs/LinuxSmoke/20260921-225230-064`
+confirmou HUD, arma, infectados em movimento, barris e captura inicial do cursor
+sem disparo. Logs da sessão normal registraram disparos, morte PvP sem infecção e
+respawn. A automação de interface parou ao detectar uso humano; a sessão ficou
+aberta ao usuário. Isso não equivale à sua aprovação final do combate nem comprova
+infecção causada pela perseguição normal de um zombie.

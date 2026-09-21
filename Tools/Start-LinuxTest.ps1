@@ -1,5 +1,7 @@
 param(
     [switch]$Smoke,
+    [switch]$Fps,
+    [switch]$Combat,
     [switch]$Manual,
     [switch]$ForceBuild,
     [string]$EditorPath,
@@ -15,6 +17,8 @@ $runRoot = Join-Path $projectRoot ('Logs/LinuxSmoke/' + (Get-Date -Format 'yyyyM
 $launcherMutex = $null; $ownsMutex = $false; $server = $null; $linuxRecord = $null; $linuxWrapper = $null
 $wslAddress = $null; $exitCode = 0; $failure = $null
 . (Join-Path $PSScriptRoot 'Build-Helpers.ps1')
+. (Join-Path $PSScriptRoot 'Assert-FpsSmoke.ps1')
+. (Join-Path $PSScriptRoot 'Assert-CombatSmoke.ps1')
 
 function Format-WslArgument([string]$Value) {
     # WSL interpreta switches diretamente; aspas sao necessarias somente em valores com espacos.
@@ -74,6 +78,9 @@ try {
     Import-Module Microsoft.PowerShell.Utility -Scope Global -ErrorAction Stop
     New-Item -ItemType Directory -Path $runRoot -Force | Out-Null
     if ($Manual -and $Smoke) { throw 'Escolha -Manual ou -Smoke.' }
+    if ($Manual -and $Fps) { throw 'Use -Smoke -Fps para o teste automatico de movimentacao.' }
+    if ($Manual -and $Combat) { throw 'Use -Smoke -Combat para o teste automatico de combate.' }
+    if ($Fps -and $Combat) { throw 'Execute -Smoke -Fps e -Smoke -Combat separadamente.' }
     $pathHasher = [Security.Cryptography.SHA256]::Create()
     try { $mutexSuffix = [BitConverter]::ToString($pathHasher.ComputeHash([Text.Encoding]::UTF8.GetBytes($projectRoot.ToLowerInvariant()))).Replace('-', '') }
     finally { $pathHasher.Dispose() }
@@ -102,6 +109,8 @@ try {
     $linuxWrapper = $linuxRoot + '/Tools/Run-LinuxServer.sh'
     $duration = if ($Manual) { '1800' } else { '180' }
     $serverArguments = @('-d',$Distribution,'--exec','/bin/bash',$linuxWrapper,$linuxExePath,$wslAddress,"$Port",$linuxLog,$linuxRecord,$duration)
+    if ($Fps) { $serverArguments += '--fps-smoke' }
+    if ($Combat) { $serverArguments += '--combat-smoke' }
     $server = Start-Process -FilePath 'wsl.exe' -ArgumentList (($serverArguments | ForEach-Object { Format-WslArgument $_ }) -join ' ') -WindowStyle Hidden -RedirectStandardOutput (Join-Path $runRoot 'wsl.stdout.log') -RedirectStandardError (Join-Path $runRoot 'wsl.stderr.log') -PassThru
     $processes.Add($server)
     Wait-LinuxTestLog 'server' ('LISTEN_RESULT state=Succeeded endpoint=' + [regex]::Escape("${wslAddress}:$Port")) $server
@@ -109,28 +118,39 @@ try {
     Assert-LinuxTest ($serverLog -match 'START role=server' -and $serverLog -match 'NullGfxDevice|Null Device|GfxDevice: creating device client; threaded=0') 'Servidor Linux dedicado iniciou sem GPU no IP privado WSL.'
     $clientArgs = @()
     if (-not $Manual) { $clientArgs = @('--quit-after','45') }
+    if ($Fps) { $clientArgs += '--fps-smoke' }
+    if ($Combat) { $clientArgs += '--combat-smoke' }
     $clientA = Start-WindowsClient 'client-a' $clientArgs
-    $clientB = Start-WindowsClient 'client-b' ($clientArgs + @('--cycle-after','5','--reconnect-delay','2'))
+    $clientBArgs = @($clientArgs)
+    if (-not $Manual) { $clientBArgs += @('--cycle-after','5','--reconnect-delay','2') }
+    $clientB = Start-WindowsClient 'client-b' $clientBArgs
     Wait-LinuxTestLog 'client-a' '\[Ferrugem\] CONNECTED world=FerrugemClient' $clientA
-    Wait-LinuxTestLog 'client-b' '\[Ferrugem\] CYCLE_COMPLETE' $clientB
-    Wait-LinuxTestLog 'server' 'CONNECTION_COUNT world=FerrugemServer count=2[\s\S]*CONNECTION_COUNT world=FerrugemServer count=2' $server
-    $clientBLog = Read-SharedLog (Join-Path $runRoot 'client-b.log')
-    Assert-LinuxTest ([regex]::Matches($clientBLog,'\[Ferrugem\] CONNECTED world=FerrugemClient').Count -ge 2) 'Cliente Windows B conectou duas vezes ao servidor Linux.'
-    Assert-LinuxTest ($clientBLog -match 'CONNECTION_EVENT[^\r\n]*Disconnected') 'Desconexao real precedeu a reconexao do cliente B.'
-    Assert-LinuxTest (-not $server.HasExited) 'Servidor Linux permaneceu ativo durante o ciclo.'
-    Assert-LinuxTest ((Read-SharedLog (Join-Path $runRoot 'server.log')) -notmatch 'Exception:|START_FAILED') 'Servidor sem excecoes no caminho positivo.'
-    foreach ($name in @('client-a','client-b')) {
-        $log = Read-SharedLog (Join-Path $runRoot ($name + '.log'))
-        Assert-LinuxTest ($log -match 'START role=client' -and $log -notmatch 'world=FerrugemServer|LISTEN_RESULT|Exception:|START_FAILED|CYCLE_INCOMPLETE') "$name executou somente cliente Windows sem falhas."
-    }
-    $mismatch = Start-WindowsClient 'protocol-mismatch' @('--protocol','2','--quit-after','12')
-    if (-not $mismatch.WaitForExit(30000)) { throw 'Timeout no teste de protocolo incompativel.' }
-    $badLog = Read-SharedLog (Join-Path $runRoot 'protocol-mismatch.log')
-    $serverLog = Read-SharedLog (Join-Path $runRoot 'server.log')
-    Assert-LinuxTest (($badLog + $serverLog) -match 'BadProtocolVersion|bad protocol version') 'Protocolo incompativel rejeitado explicitamente.'
-    Assert-LinuxTest ($badLog -notmatch '\[Ferrugem\] CONNECTED' -and $serverLog -notmatch 'CONNECTION_COUNT world=FerrugemServer count=3') 'Cliente incompativel nao entrou no jogo.'
     if ($Manual) {
-        Write-Host 'Teste Linux aprovado. Feche as duas janelas para encerrar. Limite da sessao: 30 minutos.'
+        Wait-LinuxTestLog 'client-b' '\[Ferrugem\] CONNECTED world=FerrugemClient' $clientB
+        Wait-LinuxTestLog 'server' 'CONNECTION_COUNT world=FerrugemServer count=2\b' $server
+        Assert-LinuxTest (-not $clientA.HasExited -and -not $clientB.HasExited -and -not $server.HasExited) 'Dois clientes Windows conectados ao servidor Linux para jogar.'
+    }
+    else {
+        Wait-LinuxTestLog 'client-b' '\[Ferrugem\] CYCLE_COMPLETE' $clientB
+        Wait-LinuxTestLog 'server' 'CONNECTION_COUNT world=FerrugemServer count=2[\s\S]*CONNECTION_COUNT world=FerrugemServer count=2' $server
+        $clientBLog = Read-SharedLog (Join-Path $runRoot 'client-b.log')
+        Assert-LinuxTest ([regex]::Matches($clientBLog,'\[Ferrugem\] CONNECTED world=FerrugemClient').Count -ge 2) 'Cliente Windows B conectou duas vezes ao servidor Linux.'
+        Assert-LinuxTest ($clientBLog -match 'CONNECTION_EVENT[^\r\n]*Disconnected') 'Desconexao real precedeu a reconexao do cliente B.'
+        Assert-LinuxTest (-not $server.HasExited) 'Servidor Linux permaneceu ativo durante o ciclo.'
+        Assert-LinuxTest ((Read-SharedLog (Join-Path $runRoot 'server.log')) -notmatch 'Exception:|START_FAILED') 'Servidor sem excecoes no caminho positivo.'
+        foreach ($name in @('client-a','client-b')) {
+            $log = Read-SharedLog (Join-Path $runRoot ($name + '.log'))
+            Assert-LinuxTest ($log -match 'START role=client' -and $log -notmatch 'world=FerrugemServer|LISTEN_RESULT|Exception:|START_FAILED|CYCLE_INCOMPLETE') "$name executou somente cliente Windows sem falhas."
+        }
+        $mismatch = Start-WindowsClient 'protocol-mismatch' @('--protocol','2','--quit-after','12')
+        if (-not $mismatch.WaitForExit(30000)) { throw 'Timeout no teste de protocolo incompativel.' }
+        $badLog = Read-SharedLog (Join-Path $runRoot 'protocol-mismatch.log')
+        $serverLog = Read-SharedLog (Join-Path $runRoot 'server.log')
+        Assert-LinuxTest (($badLog + $serverLog) -match 'BadProtocolVersion|bad protocol version') 'Protocolo incompativel rejeitado explicitamente.'
+        Assert-LinuxTest ($badLog -notmatch '\[Ferrugem\] CONNECTED' -and $serverLog -notmatch 'CONNECTION_COUNT world=FerrugemServer count=3') 'Cliente incompativel nao entrou no jogo.'
+    }
+    if ($Manual) {
+        Write-Host 'Sessao Linux pronta para jogar. Feche as duas janelas para encerrar. Limite da sessao: 30 minutos.'
         while (-not $clientA.HasExited -or -not $clientB.HasExited) {
             if ($server.HasExited) { throw 'Servidor Linux encerrou durante a sessao manual.' }
             Start-Sleep -Milliseconds 300
@@ -148,6 +168,12 @@ try {
         Assert-LinuxTest ($finalLog -notmatch 'Exception:|START_FAILED|CYCLE_INCOMPLETE') "$name sem falhas tardias no log final."
     }
     Assert-LinuxTest (-not $server.HasExited) 'Servidor Linux permaneceu ativo ate o fim do teste.'
+    if ($Fps) {
+        Assert-FpsSmoke -ServerLog (Read-SharedLog (Join-Path $runRoot 'server.log')) -ClientALog (Read-SharedLog (Join-Path $runRoot 'client-a.log')) -ClientBLog (Read-SharedLog (Join-Path $runRoot 'client-b.log')) -Assert { param($condition, $message) Assert-LinuxTest $condition $message }
+    }
+    if ($Combat) {
+        Assert-CombatSmoke -ServerLog (Read-SharedLog (Join-Path $runRoot 'server.log')) -ClientALog (Read-SharedLog (Join-Path $runRoot 'client-a.log')) -ClientBLog (Read-SharedLog (Join-Path $runRoot 'client-b.log')) -Assert { param($condition, $message) Assert-LinuxTest $condition $message }
+    }
 }
 catch { $failure = $_.Exception.Message; Write-Host ("ERRO: " + $failure) -ForegroundColor Red; $exitCode = 1 }
 finally {
@@ -162,10 +188,13 @@ finally {
     if (Test-Path -LiteralPath $runRoot) {
         $warnings = @()
         if ((Read-SharedLog (Join-Path $runRoot 'server.log')) -match 'Leak Detected') { $warnings += 'Unity reportou Leak Detected no encerramento; investigar antes de producao.' }
-        [ordered]@{ result = $(if ($exitCode -eq 0) { 'PASS' } else { 'FAIL' }); error = $failure; distribution = $Distribution; address = $wslAddress; port = $Port; checks = $checks.ToArray(); warnings = $warnings; logDirectory = $runRoot } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $runRoot 'result.json') -Encoding UTF8
+        [ordered]@{ result = $(if ($exitCode -eq 0) { 'PASS' } else { 'FAIL' }); mode = $(if ($Manual) { 'manual' } else { 'smoke' }); error = $failure; distribution = $Distribution; address = $wslAddress; port = $Port; checks = $checks.ToArray(); warnings = $warnings; logDirectory = $runRoot } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $runRoot 'result.json') -Encoding UTF8
     }
     if ($ownsMutex) { $launcherMutex.ReleaseMutex() }
     if ($launcherMutex) { $launcherMutex.Dispose() }
 }
-if ($exitCode -eq 0) { Write-Host "LINUX_SMOKE_PASS logs=$runRoot" }
+if ($exitCode -eq 0) {
+    if ($Manual) { Write-Host "LINUX_MANUAL_PASS logs=$runRoot" }
+    else { Write-Host "LINUX_SMOKE_PASS logs=$runRoot" }
+}
 exit $exitCode

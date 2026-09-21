@@ -1,4 +1,4 @@
-# Lore e design v0.1
+# Lore e design v0.2
 
 Tudo nesta seção é criação proposta para o projeto, salvo as referências identificadas no README. Valores são parâmetros iniciais de playtest.
 
@@ -67,6 +67,10 @@ Recursos reaparecem em lotes anunciados e com intervalo. Depósitos, carga e ent
 
 ## Armas e veículos
 
+A pé, o jogo é exclusivamente FPS. Terceira pessoa fica disponível apenas enquanto
+o jogador estiver em um veículo. Personagens mantêm proporções humanas e aparência
+civil sóbria: low poly não significa cabeças enormes, cores de brinquedo ou tom cômico.
+
 Armas propostas: espingarda de caça, carabina de ferrolho, rifle civil de pequeno calibre, revólver, pistola antiga, arma artesanal fictícia e ferramentas de contato. Começar com uma carabina simples. Equipamento é gasto e limitado, mas a resposta dos comandos deve ser consistente; falhas aleatórias que decidem duelos ficam fora do primeiro protótipo.
 
 Terrestres: bicicleta, moto utilitária, automóvel, caminhonete, van, caminhão e trator. A blindagem improvisada troca velocidade, consumo e visibilidade por proteção. Nenhum tanque ou plataforma militar.
@@ -75,7 +79,11 @@ Aéreos previstos: ultraleve de transporte leve e helicóptero civil de manuten�
 
 ## Zombies e destruição no mesmo sistema
 
-Infectados respondem a som e visão, abandonam perseguições sem estímulo e se concentram nos pontos de recurso. Tiros e motores aumentam o risco de uma rota, mas não fazem nascer inimigos na frente do jogador. Sem infecção persistente ou transformação do jogador na primeira versão.
+Infectados são lentos, inspirados no ritmo de The Walking Dead, e funcionam como obstáculos e distrações durante a disputa entre jogadores. Respondem a som e visão, abandonam perseguições sem estímulo e se concentram nos pontos de recurso. Tiros e motores aumentam o risco de uma rota, mas não fazem nascer inimigos arbitrariamente na frente do jogador.
+
+Um ataque corpo a corpo válido do zombie mata o jogador imediatamente. O servidor confirma alcance e instante do ataque; mero contato entre colisores não equivale a acerto. A morte causada por zombie gera exatamente um novo infectado no lugar do jogador morto. O atacante continua existindo e o jogador retorna pelo respawn humano. Esse evento deve ser deduplicado; não há período de incubação ou controle do infectado pelo jogador. Mortes PvP não geram zombies no recorte inicial.
+
+Zombies só morrem com tiro na cabeça ou explosão; tiros no corpo não os matam. Começar com poucos, ataques perceptíveis e perseguição limitada para que sejam interferência ambiental, apesar da letalidade. Velocidade, população e alcance exigem playtest especialmente em portas e interiores.
 
 Armas leves quebram vidros, portas e coberturas frágeis. Árvores caem com impacto apropriado, ferramentas e dano acumulado. Veículos pesados e eventos explosivos de jogo podem comprometer estruturas preparadas. Edifícios reforçados não desabam com poucos tiros de pistola.
 

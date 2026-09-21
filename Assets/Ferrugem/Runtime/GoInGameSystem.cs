@@ -4,26 +4,50 @@ using Unity.NetCode;
 
 namespace Ferrugem
 {
-    // Adapted from Unity's HelloNetcode GoInGameSystem; see third-party notice.
+    public struct FpsReadyRpc : IRpcCommand { }
+    public struct ConnectionLogged : IComponentData { }
+
+    // Unity HelloNetcode ready-RPC pattern: snapshots start only after the client's ghost prefab loaded.
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
     public partial class GoInGameSystem : SystemBase
     {
-        protected override void OnCreate()
-        {
-            RequireForUpdate(GetEntityQuery(ComponentType.ReadOnly<NetworkId>(),
-                ComponentType.Exclude<NetworkStreamInGame>()));
-        }
-
+        private bool Ready(Entity prefab) => EntityManager.Exists(prefab) && EntityManager.HasComponent<GhostType>(prefab);
+        protected override void OnCreate() { RequireForUpdate<NetworkId>(); }
         protected override void OnUpdate()
         {
-            using var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var (id, entity) in SystemAPI.Query<NetworkId>()
-                         .WithNone<NetworkStreamInGame>().WithEntityAccess())
+            using var buffer = new EntityCommandBuffer(Allocator.Temp);
+            foreach (var (id, entity) in SystemAPI.Query<NetworkId>().WithNone<ConnectionLogged>().WithEntityAccess())
             {
                 UnityEngine.Debug.Log($"[Ferrugem] CONNECTED world={World.Name} networkId={id.Value}");
-                commandBuffer.AddComponent<NetworkStreamInGame>(entity);
+                buffer.AddComponent<ConnectionLogged>(entity);
             }
-            commandBuffer.Playback(EntityManager);
+            if (SystemAPI.TryGetSingleton<FpsPrefab>(out var prefab) && EntityManager.Exists(prefab.Value)
+                && EntityManager.HasComponent<GhostType>(prefab.Value)
+                && SystemAPI.TryGetSingleton<CombatPrefabs>(out var combat) && Ready(combat.Zombie) && Ready(combat.Barrel) && Ready(combat.Charge))
+            {
+                if (World.IsClient())
+                {
+                    foreach (var (_, connection) in SystemAPI.Query<NetworkId>().WithNone<NetworkStreamInGame>().WithEntityAccess())
+                    {
+                        buffer.AddComponent<NetworkStreamInGame>(connection);
+                        var request = buffer.CreateEntity();
+                        buffer.AddComponent<FpsReadyRpc>(request);
+                        buffer.AddComponent(request, new SendRpcCommandRequest { TargetConnection = connection });
+                    }
+                }
+                else
+                {
+                    foreach (var (request, entity) in SystemAPI.Query<ReceiveRpcCommandRequest>().WithAll<FpsReadyRpc>().WithEntityAccess())
+                    {
+                        var connection = request.SourceConnection;
+                        if (EntityManager.Exists(connection) && EntityManager.HasComponent<NetworkId>(connection)
+                            && !EntityManager.HasComponent<NetworkStreamInGame>(connection))
+                            buffer.AddComponent<NetworkStreamInGame>(connection);
+                        buffer.DestroyEntity(entity);
+                    }
+                }
+            }
+            buffer.Playback(EntityManager);
         }
     }
 }

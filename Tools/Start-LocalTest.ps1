@@ -1,5 +1,6 @@
 param(
     [switch]$Smoke,
+    [switch]$Fps,
     [switch]$ForceBuild,
     [string]$EditorPath
 )
@@ -14,6 +15,7 @@ $exitCode = 0
 . (Join-Path $PSScriptRoot "Build-Helpers.ps1")
 
 try {
+    if ($Fps -and -not $Smoke) { throw 'Use -Smoke -Fps para o teste automatico de movimentacao.' }
     # Carregar funcoes do Utility no escopo do script antes das chamadas aninhadas.
     Import-Module Microsoft.PowerShell.Utility -Scope Global -ErrorAction Stop
     $pathHasher = [Security.Cryptography.SHA256]::Create()
@@ -26,7 +28,7 @@ try {
     New-Item -ItemType Directory -Path $runRoot -Force | Out-Null
     $executable = Get-VerifiedBuild -Platform Windows -EditorPath $EditorPath -ForceBuild:$ForceBuild
     if ($Smoke) {
-        & (Join-Path $PSScriptRoot 'Test-NetworkSmoke.ps1') -Executable $executable
+        & (Join-Path $PSScriptRoot 'Test-NetworkSmoke.ps1') -Executable $executable -Fps:$Fps
     }
     else {
         if (Get-NetUDPEndpoint -LocalPort 17979 -ErrorAction SilentlyContinue) { throw 'A porta UDP 17979 esta ocupada. Feche o teste anterior antes de iniciar outro.' }

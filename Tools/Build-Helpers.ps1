@@ -22,7 +22,9 @@ function Get-SourceFingerprint([string[]]$Folders = @('Assets', 'Packages', 'Pro
     foreach ($folder in $Folders) {
         foreach ($file in (Get-ChildItem -LiteralPath (Join-Path $projectRoot $folder) -File -Recurse | Sort-Object FullName)) {
             $relative = $file.FullName.Substring($projectRoot.Length + 1).Replace('\', '/')
+            # Cache gerado por com.unity.entities/Unity.Scenes/SceneWithBuildConfigurationGUIDs.cs.
             if ($relative -match '^Assets/netcode-build-assets-temp(?:/|\.meta$)' -or
+                $relative -match '^Assets/SceneDependencyCache(?:/|\.meta$)' -or
                 $relative -match '^Assets/Resources/PerformanceTestRun(?:Info|Settings)\.json(?:\.meta)?$') { continue }
             $lines.Add($relative + ':' + (Get-Sha256 $file.FullName))
         }

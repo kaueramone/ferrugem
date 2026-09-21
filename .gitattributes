@@ -18,12 +18,14 @@
 *.unity whitespace=-blank-at-eol
 *.prefab whitespace=-blank-at-eol
 *.asset whitespace=-blank-at-eol
+Assets/Ferrugem/Resources/Ferrugem/PrototypeSurface.mat whitespace=-blank-at-eol
 *.meta whitespace=-blank-at-eol
 *.wlt whitespace=-blank-at-eol
 
 # Preservar bytes dos textos oficiais/template fornecidos pelo Unity.
 Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs whitespace=-blank-at-eol,-blank-at-eof
 Assets/ThirdParty/HelloNetcode/LICENSE.md whitespace=-blank-at-eol,-blank-at-eof
+Assets/ThirdParty/QuaterniusAnimatedMen/License.txt whitespace=-blank-at-eol,-blank-at-eof
 
 # LFS apenas para arte binária; cenas, prefabs e código continuam texto.
 *.fbx filter=lfs diff=lfs merge=lfs -text

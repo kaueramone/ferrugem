@@ -31,6 +31,14 @@ Aceite: checkout limpo abre e compila; cliente e servidor registram mesma versã
 
 Implementar: personagem previsto, tiro validado, um veículo terrestre, um zombie, árvore com estado, parede modular e uma célula de terreno que muda colisão. Reutilizar padrões dos exemplos oficiais e documentar o código próprio de gameplay.
 
+Executar em três marcos, conforme [Fase 2](../FASE-2.md): **2A**, personagem FPS e
+corpo remoto entre dois clientes; **2B**, arma civil e zombie lento, ataque fatal,
+criação de um infectado por morte causada por zombie e eliminação apenas por tiro
+na cabeça ou explosão; **2C**, veículo civil e destruição. Terceira pessoa é
+permitida somente em veículos. O marco 2A não inclui combate ou infectados.
+Usar assets gratuitos de proporções humanas e estética sóbria, com procedência em
+[Assets do protótipo](../ASSETS-PROTOTIPO.md), antes de investir em arte própria.
+
 Referências: [previsão e mundos](https://docs.unity3d.com/Packages/com.unity.netcode@1.4/manual/client-server-worlds.html), [snapshots](https://docs.unity3d.com/Packages/com.unity.netcode@1.10/manual/ghost-snapshots.html), [NavMesh Surface](https://docs.unity3d.com/Packages/com.unity.ai.navigation@2.0/manual/NavMeshSurface.html), arquitetura deste pacote.
 
 Aceite: dois clientes veem o mesmo dano/colisão; novo cliente encontra os objetos já destruídos; carro e zombie atravessam corretamente o cenário modificado; comportamento utilizável com 100 ms RTT e perda de 1%; perfil de CPU registrado. Guardas: sem autoridade do cliente sobre dano, sem RPC único como armazenamento da destruição e sem assumir física idêntica entre máquinas.
