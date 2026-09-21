@@ -4,7 +4,7 @@ Tudo nesta seção é criação proposta para o projeto, salvo as referências i
 
 ## Premissa
 
-Onze anos depois da Febre Cinzenta, as grandes cidades deixaram de responder. No Vale do Sal, três comunidades sobreviveram mantendo coisas simples em funcionamento: poços, motores, oficinas e pequenas lavouras. O mundo ainda tem combustível, armas de caça, rádios e estradas. O que acabou foi a cadeia capaz de substituir tudo isso.
+No Brasil fictício do Ferrugem, onze anos depois da Febre Cinzenta, as grandes cidades deixaram de responder. No Vale do Sal, três comunidades sobreviveram mantendo coisas simples em funcionamento: poços, motores, oficinas e pequenas lavouras. O mundo ainda tem combustível, armas de caça, rádios e estradas. O que acabou foi a cadeia capaz de substituir tudo isso.
 
 No centro do vale fica Santa Brasa, antiga cidade de distribuição agrícola. Seu mercado municipal, depósitos, posto rodoviário e delegacia concentraram os últimos carregamentos durante a evacuação. Os infectados continuam circulando ali, atraídos por motores, geradores e disparos.
 
@@ -91,8 +91,20 @@ Crateras físicas aparecem apenas onde o terreno admite deformação. Estruturas
 
 ## Primeiro mapa e primeiro recorte
 
-Mapa de validação: cerca de 600 × 600 m, três acampamentos, rotas de chegada de duração semelhante, centro de cerca de 150–200 m e um mercado. Ampliar para um mapa de aproximadamente 1,5–2 km de lado somente se a densidade de encontros justificar. Dimensões não derivam automaticamente de WARDOGS.
+A proposta inicial de validação de 600 × 600 m, com centro de 150–200 m, era um bloco de protótipo e não define o mapa final. A antiga sugestão de expansão para 1,5–2 km de lado foi substituída pela direção atual do usuário: cidade central de aproximadamente 1 km de diâmetro, três acampamentos e faixa externa de mata/montanhas. O usuário esclareceu 3 km de cada base ao centro e autorizou ampliar o mapa: o alvo de desenho adotado é 8 × 8 km (64 km²), bases a 120 graus e cidade de 1 km de diâmetro. A referência inicial de 8 km² deixou de limitar essa proposta. Consulte o [briefing brasileiro](../MAPA-BRASILEIRO.md). O cenário técnico implementado de 40 × 40 m continua separado desse alvo.
 
 Primeiro recorte jogável: 12 pessoas, carabina, caminhonete, mercado, reciclagem, um modelo de posto, 15–30 zombies ativos e um quarteirão destrutível. Um prédio modular, uma árvore derrubável e uma seção de solo com cratera física bastam para provar os riscos.
 
 Depois: variedade civil, cinco tipos de estabelecimento, 30/60/100 jogadores, mais infectados por orçamento, um aéreo e mapa ampliado. Estética low poly com silhuetas legíveis, iluminação simples e ruído visual controlado. Não definir requisitos finais de loja antes de medir esse conteúdo.
+
+## Direção brasileira e arte própria
+
+Toda a apresentação ao jogador será em português do Brasil. Santa Brasa e o Vale
+do Sal são fictícios; moradores e rotas de comércio trazem histórias das cinco
+regiões brasileiras, sem vincular região a facção ou comprimir cinco biomas no
+mesmo mapa. As comunidades vivem em acampamentos simples de materiais
+reaproveitados, ligados por asfalto gasto e estradas de terra.
+
+A arte de produção será original. Os pacotes Synty indicados são apenas referências
+e não serão comprados; o civil CC0 atual permanece provisório. Geografia, nomes,
+paleta e critérios de composição estão no [briefing do mapa](../MAPA-BRASILEIRO.md).

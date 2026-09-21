@@ -16,6 +16,13 @@ Nome provisório. Jogo multiplayer PvPvE de três grupos de sobreviventes, captu
 - `Assets` guarda cenas e código; `Packages` fixa dependências; `ProjectSettings` guarda configurações. `Library` é um cache local, recriado pelo Editor.
 - Git registra alterações locais. Git LFS armazena versões de arquivos de arte grandes; ele está ativado somente neste repositório. O remoto `origin` aponta para [kaueramone/ferrugem](https://github.com/kaueramone/ferrugem), e a branch desta fundação é `feat/unity-foundation`.
 
+## Direção brasileira e mapa
+
+O [briefing de Santa Brasa](Docs/MAPA-BRASILEIRO.md) registra a direção em PT-BR,
+arte própria, referências brasileiras das cinco regiões e a geometria conceitual:
+terreno de 8 × 8 km, cidade de 1 km de diâmetro e três bases a 3 km do centro.
+Esse mapa ainda não está implementado; o cenário executável continua sendo o
+campo técnico de 40 × 40 m. Consulte também a [planta conceitual e suas medidas](Docs/Mapas/README.md). Pacotes Synty são apenas referências e não serão comprados.
 ## Decisões de partida
 
 Cliente Windows e servidor dedicado Linux. O projeto foi criado a partir do template URP do Unity 6000.3.24f1, e o módulo Linux Dedicated Server está instalado. URP 17.3.0, Entities 1.4.8, Netcode for Entities 1.14.2 e Transport 2.7.4 passaram pela importação, compilação e teste de conexão. A [decisão de versões](Docs/ADR-001-UNITY-E-PACOTES.md) registra a escolha dos pacotes; o [registro das fases](Docs/FASES-0-1.md) contém resultados e pendências.

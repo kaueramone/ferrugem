@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1180" viewBox="0 0 1400 1180" role="img" aria-labelledby="title desc">
+<title id="title">Santa Brasa — estudo territorial de Ferrugem</title>
+<desc id="desc">Mapa esquemático original de terreno de oito por oito quilômetros. Cidade central com um quilômetro de diâmetro, três acampamentos equidistantes a três quilômetros do centro, estradas curvas, floresta e relevo ilustrativos.</desc>
+<defs>
+ <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M100 0H0V100" fill="none" stroke="#c5bea8" stroke-width="1"/></pattern>
+ <pattern id="forest" width="23" height="25" patternUnits="userSpaceOnUse"><path d="M11 4L4 18H18Z" fill="#798067" opacity=".45"/></pattern>
+ <pattern id="hill" width="39" height="30" patternUnits="userSpaceOnUse"><path d="M2 24L18 6L34 24M13 12L18 15L23 12" fill="none" stroke="#8e8774" stroke-width="1.3"/></pattern>
+ <style>text{font-family:Arial,sans-serif;fill:#31382f}.small{font-size:13px}.label{font-size:16px;font-weight:bold}.note{font-size:14px}.halo{paint-order:stroke;stroke:#eee9d9;stroke-width:5px;stroke-linejoin:round}.distance{stroke:#9c633f;stroke-width:1.8;stroke-dasharray:7 7;fill:none}.road{stroke:#5a5a50;stroke-width:6;fill:none;stroke-linecap:round}.dirt{stroke:#a98b61;stroke-width:4;stroke-dasharray:10 5;fill:none;stroke-linecap:round}.camp{fill:#806343;stroke:#eee9d9;stroke-width:3}</style>
+</defs>
+<rect width="1400" height="1180" fill="#eee9d9"/>
+<text x="70" y="55" font-size="32" font-weight="bold">SANTA BRASA</text>
+<text x="70" y="83" font-size="17">Ferrugem · estudo territorial · apocalipse brasileiro</text>
+<text x="70" y="112" class="note">Desenho original de planejamento — escala territorial definida; ocupação e equilíbrio de jogo em estudo.</text>
+<!-- Cartografia: 100 px = 1 km; origem mundial x=0,z=0 em (470,570); norte é +z. -->
+<rect x="70" y="170" width="800" height="800" fill="#e0deca" stroke="#515b48" stroke-width="2"/>
+<path d="M70 170H870V305L787 324L711 269L632 292L571 250L471 282L359 241L230 298L155 263L70 302Z" fill="url(#hill)"/>
+<path d="M70 739L155 783L193 864L330 898L369 970H70Z M870 754L797 791L783 890L657 939L642 970H870Z" fill="url(#hill)"/>
+<path d="M102 331L254 293L361 369L335 464L241 519L101 452Z M607 316L790 349L830 495L747 547L660 497Z M326 710L397 775L540 758L641 810L605 893L433 922L310 847Z" fill="url(#forest)" stroke="#93977d" stroke-width="1"/>
+<rect x="70" y="170" width="800" height="800" fill="url(#grid)"/>
+<path class="road" d="M470 270C450 343 543 375 523 438S454 480 470 520 M210.1924 720C258 711 260 648 327 663S376 601 426 583 M729.8076 720C735 650 654 685 639 631S553 625 513 595"/>
+<path class="dirt" d="M470 270C345 326 398 405 307 453S336 549 421 554 M210.1924 720C230 804 352 725 369 660S412 632 444 612 M729.8076 720C824 656 740 576 694 561S580 533 519 551"/>
+<path class="distance" d="M470 570V270 M470 570L210.1924 720 M470 570L729.8076 720"/>
+<!-- Cidade: 100 px de diâmetro = 1 km. -->
+<circle cx="470" cy="570" r="50" fill="#c3b79a" stroke="#605443" stroke-width="2"/>
+<path d="M440 536V603 M466 525V615 M491 532V608 M425 551H515 M420 580H520 M438 601H503" fill="none" stroke="#eee9d9" stroke-width="5"/>
+<circle cx="470" cy="570" r="12.5" fill="#a8603e" fill-opacity=".55" stroke="#833e28" stroke-width="1.4"/>
+<circle cx="470" cy="570" r="2.5" fill="#452e24"/>
+<path d="M420 640H520 M420 634V646 M520 634V646" fill="none" stroke="#605443" stroke-width="1.5"/>
+<text x="470" y="666" text-anchor="middle" class="small halo">CIDADE · Ø 1 km</text>
+<text x="488" y="402" class="label halo">3 km</text>
+<text x="326" y="620" transform="rotate(-30 326 620)" class="label halo">3 km</text>
+<text x="575" y="620" transform="rotate(30 575 620)" class="label halo">3 km</text>
+<!-- Acampamentos pequenos; símbolos esquemáticos, sem muralhas. -->
+<g class="camp"><path d="M458 281L470 258L482 281Z"/><rect x="453" y="273" width="9" height="8"/><rect x="480" y="274" width="11" height="7"/>
+<path d="M198 731L210.1924 708L222 731Z"/><rect x="193" y="723" width="9" height="8"/><rect x="220" y="724" width="11" height="7"/>
+<path d="M718 731L729.8076 708L742 731Z"/><rect x="713" y="723" width="9" height="8"/><rect x="740" y="724" width="11" height="7"/></g>
+<text x="470" y="219" text-anchor="middle" class="label halo">A · COOPERATIVA VÁRZEA</text>
+<text x="470" y="239" text-anchor="middle" class="small halo">Acampamento norte</text>
+<text x="210" y="765" text-anchor="middle" class="label halo">B · UNIÃO OFICINAS</text>
+<text x="210" y="785" text-anchor="middle" class="small halo">Acampamento sudoeste</text>
+<text x="730" y="765" text-anchor="middle" class="label halo">C · CARAVANA ASFALTO</text>
+<text x="730" y="785" text-anchor="middle" class="small halo">Acampamento sudeste</text>
+<text x="166" y="390" class="small halo">MATA / ESTUDO</text><text x="687" y="419" class="small halo">MATA / ESTUDO</text>
+<text x="414" y="856" class="small halo">MATA / ESTUDO</text>
+<text x="92" y="940" class="small halo">RELEVO PERIFÉRICO / ESTUDO</text>
+<text x="470" y="153" text-anchor="middle" class="note">8 km</text>
+<text x="46" y="570" transform="rotate(-90 46 570)" text-anchor="middle" class="note">8 km · terreno total de 64 km²</text>
+<g transform="translate(820 205)"><path d="M0 29V0M-7 13L0 0L7 13" fill="none" stroke="#31382f" stroke-width="2"/><text x="0" y="-8" text-anchor="middle" class="label">N</text></g>
+<path d="M90 1002H190 M90 996V1008 M190 996V1008" fill="none" stroke="#31382f" stroke-width="3"/>
+<text x="90" y="1028" class="small">0</text><text x="190" y="1028" text-anchor="end" class="small">1 km</text>
+<text x="270" y="1007" class="note">Distância entre quaisquer dois acampamentos: ≈ 5,196 km em linha reta.</text>
+<!-- Ampliação central: fator 3,2 em relação ao mapa. -->
+<text x="920" y="175" font-size="21" font-weight="bold">CIDADE CENTRAL</text>
+<text x="920" y="198" class="note">Ampliação esquemática · Ø 1 km</text>
+<circle cx="1135" cy="410" r="160" fill="#c3b79a" stroke="#605443" stroke-width="2"/>
+<path d="M1030 312V508 M1100 257V561 M1171 255V565 M1240 303V520 M990 340H1280 M975 410H1295 M996 480H1274" stroke="#eee9d9" stroke-width="12" fill="none"/>
+<circle cx="1135" cy="410" r="40" fill="#a8603e" fill-opacity=".5" stroke="#833e28" stroke-width="2" stroke-dasharray="5 4"/>
+<g fill="#514a3b" stroke="#eee9d9" stroke-width="2"><rect x="1073" y="302" width="28" height="22"/><rect x="1190" y="345" width="24" height="24"/><rect x="1039" y="393" width="25" height="23"/><rect x="1190" y="455" width="30" height="25"/><rect x="1069" y="483" width="24" height="23"/><rect x="1120" y="520" width="25" height="22"/></g>
+<g font-family="Arial,sans-serif" font-size="15" font-weight="bold" text-anchor="middle" style="fill:#fff"><text x="1087" y="319" style="fill:#fff">1</text><text x="1202" y="363" style="fill:#fff">2</text><text x="1051" y="410" style="fill:#fff">3</text><text x="1205" y="473" style="fill:#fff">4</text><text x="1081" y="501" style="fill:#fff">5</text><text x="1132" y="537" style="fill:#fff">6</text></g>
+<text x="1135" y="406" text-anchor="middle" class="small" font-weight="bold">CAPTURA</text><text x="1135" y="424" text-anchor="middle" class="small">Ø 250 m</text>
+<text x="920" y="603" class="note">1 Mercado Municipal</text><text x="1150" y="603" class="note">2 Posto de Combustível</text>
+<text x="920" y="630" class="note">3 Delegacia</text><text x="1150" y="630" class="note">4 Depósitos</text>
+<text x="920" y="657" class="note">5 Oficina</text><text x="1150" y="657" class="note">6 Estação de Água</text>
+<text x="920" y="689" class="small">Posições dos pontos de interesse e captura são propostas.</text>
+<path d="M920 717H1330" stroke="#b6ae96"/>
+<text x="920" y="752" class="label">LEGENDA TERRITORIAL</text>
+<path d="M922 783H980" class="road"/><text x="998" y="788" class="note">Asfalto desgastado</text>
+<path d="M922 817H980" class="dirt"/><text x="998" y="822" class="note">Estrada de terra</text>
+<path d="M922 851H980" class="distance"/><text x="998" y="856" class="note">Distância reta de referência</text>
+<rect x="922" y="877" width="58" height="24" fill="url(#forest)"/><text x="998" y="895" class="note">Mata — distribuição ilustrativa</text>
+<rect x="922" y="914" width="58" height="24" fill="url(#hill)"/><text x="998" y="932" class="note">Relevo — distribuição ilustrativa</text>
+<text x="920" y="975" class="small">Rotas curvas não representam 3 km de percurso.</text>
+<text x="920" y="996" class="small">Extensão viária e tempo de viagem ainda não definidos.</text>
+<path d="M70 1060H1330" stroke="#b6ae96"/>
+<text x="70" y="1094" class="note">Acampamentos civis remendados: barracas, sucata e estruturas leves; sem fortalezas militares.</text>
+<text x="70" y="1120" class="note">Arte vetorial original de planejamento produzida com participação de IA. Nenhuma imagem ou asset de terceiros incorporado.</text>
+<text x="70" y="1146" class="small">Este documento não é um asset do jogo. Distâncias planas; terreno, relevo, circulação e balanceamento exigem protótipo jogável.</text>
+</svg>

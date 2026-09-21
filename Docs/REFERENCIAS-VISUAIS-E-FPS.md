@@ -32,14 +32,12 @@ implementação do controlador FPS, dano, zombies, rede, KOTH ou destruição do
 Ferrugem. Não foi demonstrado que estes pacotes sejam os usados pelo jogo POLYGON;
 a coincidência de nomes não estabelece essa relação.
 
-## Caminho sem compra de assets agora
+## Arte original; referências sem compra
 
-Sem orçamento de compra definido, seguimos com o civil CC0 já integrado, recursos
-gratuitos com procedência verificada e geometria original para o bloco de teste.
+O usuário definiu que não comprará pacotes Synty. A arte do Ferrugem será própria e original; os links ficam somente como referência. O civil CC0 já integrado pode permanecer temporariamente na validação, com sua autoria preservada.
 A referência orienta proporções, paleta, densidade de detalhes e atmosfera. Layout,
 silhuetas e composição serão próprios; não serão usados arquivos extraídos dos
-produtos nem réplicas exatas dos seus modelos. Uma futura compra exigirá verificar
-conteúdo necessário, dependências, compatibilidade e licença daquele produto.
+produtos nem réplicas exatas dos seus modelos. Não há plano de comprar esses pacotes.
 
 A [licença de compra única da Synty](https://syntystore.com/pages/one-time-purchase-licence)
 consultada contém restrições específicas ao uso dos assets em datasets e programas
@@ -86,5 +84,11 @@ edificação, uma árvore, um infectado e uma arma civil. Cada construção dest
 replicação correspondentes. Comprar uma malha não implementa essa lógica.
 
 A simulação de entidades e suas regras permanecem separadas da apresentação. Isso
-permite substituir os visuais provisórios por arte própria ou licenciada depois,
+permite substituir os visuais provisórios por arte própria depois,
 sem condicionar o funcionamento do protótipo à compra de um pacote.
+
+## Direção brasileira confirmada
+
+O [briefing de Santa Brasa](MAPA-BRASILEIRO.md) estabelece a apresentação em PT-BR,
+referências às cinco regiões por meio das pessoas e sua história, três acampamentos
+humildes, cidade central de 1 km de diâmetro e mata/montanhas ao redor. O usuário confirmou bases a 3 km do centro e autorizou ampliar o mapa; o desenho passa a adotar 8 × 8 km (64 km²), ainda sem implementação desse terreno em Unity.

@@ -65,3 +65,11 @@ As cinco referências Synty e a distinção entre direção de arte e sistemas d
 estão em [Referências visuais e de controle FPS](REFERENCIAS-VISUAIS-E-FPS.md).
 Nenhum dos pacotes pagos foi importado. A seleção atual continua gratuita/CC0 e
 provisória, com geometria original para os objetos de teste.
+
+## Decisão de produção: arte original brasileira
+
+O usuário definiu **não comprar os pacotes Synty**. Eles permanecem referências
+visuais, sem extração ou cópia de conteúdo. A produção terá arte própria e PT-BR,
+conforme o [briefing do mapa brasileiro](MAPA-BRASILEIRO.md). O civil CC0 integrado
+continua apenas como recurso temporário de validação; não houve pedido de remoção
+imediata nem transferência de sua autoria para o projeto.

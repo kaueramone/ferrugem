@@ -36,3 +36,18 @@ sem disparo. Logs da sessão normal registraram disparos, morte PvP sem infecç�
 respawn. A automação de interface parou ao detectar uso humano; a sessão ficou
 aberta ao usuário. Isso não equivale à sua aprovação final do combate nem comprova
 infecção causada pela perseguição normal de um zombie.
+
+### Planejamento do mapa brasileiro
+
+IA assistiu a redação do briefing de Santa Brasa e a construção por código de uma
+planta vetorial original, renderizada também em PNG. Os arquivos em `Docs/Mapas`
+são diagramas de planejamento, não assets do jogo, captura da cena Unity ou render
+de um mapa já implementado. A planta adota terreno de 8 × 8 km, cidade de 1 km de
+diâmetro e bases a 3 km do centro, conforme o esclarecimento de distância e a
+ampliação autorizada pelo usuário.
+
+Os links Synty foram usados apenas como referências; nenhum arquivo dos pacotes
+foi utilizado e nenhum asset foi comprado. O usuário definiu arte própria para a
+produção. O civil temporário CC0 mantém a autoria de Quaternius e não passa a ser
+conteúdo gerado por IA. A apresentação futura ao jogador será em PT-BR; a planta
+não modifica o campo técnico executável de 40 × 40 m.
