@@ -27,6 +27,32 @@ Para forçar uma compilação mesmo quando o registro está atual, use `-ForceBu
 
 Validação em 21/09/2026: `Testar-Ferrugem.bat -Smoke` compilou o cliente com encerramento normal do Unity e passou nas 23 verificações, retornando código 0. Evidência local: `Logs/Smoke/20260921-191513-863/result.json`. O launcher usa SHA-256 do .NET para funcionar também no Windows PowerShell 5.1.
 
+## Servidor Linux no WSL
+
+Com a distribuição **Ubuntu-24.04 no WSL 2** funcionando, execute:
+
+```powershell
+.\Testar-Servidor-Linux.bat -Smoke
+```
+
+Esse também é o modo padrão do novo `.bat`, sem argumentos. Ele verifica os builds Windows e Linux com as mesmas rotinas de hash e registro de validação do launcher Windows, recompilando sequencialmente quando necessário. O módulo Linux Dedicated Server do Editor deve estar instalado. O teste descobre o IPv4 privado atual do WSL e conecta os clientes Windows a esse endereço, na porta UDP 17981; não presume encaminhamento UDP por `localhost`.
+
+O teste exige dois clientes Windows conectados ao servidor Linux sem GPU, desconexão e reconexão de um deles, retorno da contagem de dois clientes no servidor e rejeição de protocolo incompatível. Logs e `result.json` ficam em `Logs/LinuxSmoke/<data-hora>`. O resultado pode incluir avisos de encerramento do Unity, separados das verificações de conexão. Consulte o registro das fases para os resultados efetivamente observados.
+
+Para abrir duas janelas após validar os mesmos cenários:
+
+```powershell
+.\Testar-Servidor-Linux.bat -Manual
+```
+
+Feche as duas janelas ao terminar. A sessão manual tem limite de 30 minutos; o smoke usa servidor com limite de 180 segundos e esperas limitadas em cada etapa. `-Distribution` seleciona explicitamente outra distribuição instalada; `-Port` altera a porta. `-ForceBuild` e `-EditorPath` funcionam como no launcher Windows.
+
+O encerramento atua somente sobre o PID Linux criado pelo teste, conferindo também a identidade temporal do processo para evitar atingir um PID reutilizado. O launcher não encerra a distribuição WSL nem outros servidores. Um launcher já aberto para este projeto impede iniciar outro simultaneamente.
+
+Esse teste usa Linux real dentro do WSL, no mesmo computador dos clientes. Ele não mede latência de internet, capacidade para 100 jogadores, configuração de firewall de uma VPS ou estabilidade de operação prolongada. A homologação de uma VPS continua sendo uma etapa separada.
+
+Validação em 21/09/2026: `Testar-Servidor-Linux.bat -Smoke` passou nas 14 verificações e retornou código 0 em Ubuntu-24.04/WSL 2. Evidência: `Logs/LinuxSmoke/20260921-214016-768/result.json`. O log do servidor ainda contém aviso inicial de `Ran 0 steps` e aviso de quatro alocações persistentes no encerramento (`Leak Detected`); ambos permanecem em investigação e não impediram o teste de conexão. A regressão do launcher Windows também passou nas 23 verificações em `Logs/Smoke/20260921-213747-769/result.json`.
+
 ## Gerar executáveis
 
 Feche o Editor deste projeto antes de executar um build em batchmode. Use exatamente Unity 6000.3.24f1. Ajuste somente o caminho do Editor se a instalação estiver em outra pasta.

@@ -2,11 +2,12 @@
 
 Nome provisório. Jogo multiplayer PvPvE de três grupos de sobreviventes, captura de zona central e transporte de recursos. Planejado em Unity com participação de IA no desenvolvimento e revisão humana.
 
-**Estado desta fundação: fase 0 concluída; fase 1 parcialmente validada.** Os builds Windows e Linux foram gerados. O build Windows passou pelo teste de dois clientes e reconexão, inclusive após compilação de uma exportação limpa. Falta executar o servidor dedicado Linux com os clientes Windows. A capacidade de 100 jogadores é uma meta futura, ainda não demonstrada.
+**Estado desta fundação: fases 0 e 1 de conexão concluídas.** Dois clientes Windows conectaram ao servidor dedicado Linux no WSL, com reconexão e rejeição de protocolo incompatível validadas. A compilação limpa e o teste local Windows também passaram. Há avisos de temporização e alocação no log Linux a investigar; capacidade para 100 jogadores, gameplay e hospedagem em VPS ainda não foram demonstrados.
 
 ## Para começar
 
 - Para testar no Windows, feche o Unity e dê dois cliques em **`Testar-Ferrugem.bat`**. O launcher verifica os arquivos do projeto, compila quando necessário e abre dois clientes com um servidor local. Feche as duas janelas para encerrar o teste. Ainda é uma cena de diagnóstico de conexão, sem gameplay.
+- Para testar os clientes Windows contra o servidor dedicado Linux no WSL, use **`Testar-Servidor-Linux.bat`**. O modo padrão é automático; `-Manual` abre duas janelas. É necessário Ubuntu-24.04 funcionando no WSL 2. Consulte os [comandos e resultados](Docs/COMO-TESTAR.md).
 - A pasta de trabalho é `C:\Dev\Ferrugem`, fora do OneDrive para evitar sincronização dos arquivos temporários do Unity.
 - O [planejamento fundador](Docs/Planejamento/README.md) explica o jogo. O [registro das fases 0 e 1](Docs/FASES-0-1.md) separa decisões e validações pendentes.
 - [Como testar](Docs/COMO-TESTAR.md) contém os comandos de build, teste automatizado e conexão manual.
@@ -16,9 +17,9 @@ Nome provisório. Jogo multiplayer PvPvE de três grupos de sobreviventes, captu
 
 ## Decisões de partida
 
-Cliente Windows e servidor dedicado Linux. O projeto foi criado a partir do template URP do Unity 6000.3.24f1, e o módulo Linux Dedicated Server está instalado. URP 17.3.0, Entities 1.4.8, Netcode for Entities 1.14.2 e Transport 2.7.4 passaram pela importação e compilação do exemplo mínimo. A [decisão de versões](Docs/ADR-001-UNITY-E-PACOTES.md) registra a evidência e a correção necessária. Builds e execução multiplayer pertencem à fase 1, ainda aberta.
+Cliente Windows e servidor dedicado Linux. O projeto foi criado a partir do template URP do Unity 6000.3.24f1, e o módulo Linux Dedicated Server está instalado. URP 17.3.0, Entities 1.4.8, Netcode for Entities 1.14.2 e Transport 2.7.4 passaram pela importação, compilação e teste de conexão. A [decisão de versões](Docs/ADR-001-UNITY-E-PACOTES.md) registra a escolha dos pacotes; o [registro das fases](Docs/FASES-0-1.md) contém resultados e pendências.
 
-O primeiro aceite técnico exige cliente compilado, servidor independente e dois clientes capazes de conectar, desconectar e reconectar. Uma cena aberta no Editor não comprova esse aceite.
+O primeiro aceite técnico foi demonstrado com executáveis independentes: servidor dedicado Linux e dois clientes Windows capazes de conectar, desconectar e reconectar.
 
 ## Regras de trabalho
 

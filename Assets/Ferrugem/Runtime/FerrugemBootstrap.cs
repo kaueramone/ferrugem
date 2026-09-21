@@ -50,7 +50,8 @@ namespace Ferrugem
                 }
                 else RequestConnect();
                 Application.runInBackground = true;
-                Application.targetFrameRate = 60;
+                // Netcode's server rate manager controls pacing for the 30 Hz simulation.
+                if (!Server) Application.targetFrameRate = 60;
                 Debug.Log($"[Ferrugem] START role={(Server ? "server" : "client")} endpoint={Endpoint} protocol={Protocol} build={Application.version} world={GameWorld.Name}");
             }
             catch (Exception exception)
