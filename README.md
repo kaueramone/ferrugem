@@ -6,6 +6,7 @@ Nome provisório. Jogo multiplayer PvPvE de três grupos de sobreviventes, captu
 
 ## Para começar
 
+- Para testar no Windows, feche o Unity e dê dois cliques em **`Testar-Ferrugem.bat`**. O launcher verifica os arquivos do projeto, compila quando necessário e abre dois clientes com um servidor local. Feche as duas janelas para encerrar o teste. Ainda é uma cena de diagnóstico de conexão, sem gameplay.
 - A pasta de trabalho é `C:\Dev\Ferrugem`, fora do OneDrive para evitar sincronização dos arquivos temporários do Unity.
 - O [planejamento fundador](Docs/Planejamento/README.md) explica o jogo. O [registro das fases 0 e 1](Docs/FASES-0-1.md) separa decisões e validações pendentes.
 - [Como testar](Docs/COMO-TESTAR.md) contém os comandos de build, teste automatizado e conexão manual.

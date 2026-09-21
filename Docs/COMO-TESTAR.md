@@ -2,6 +2,31 @@
 
 Use PowerShell na pasta `C:\Dev\Ferrugem`. Estes comandos correspondem à implementação da fase 1; o resultado observado e os critérios concluídos ficam em [FASES-0-1.md](FASES-0-1.md). Uma execução com saída 0 não prova conexão multiplayer sem os eventos nos logs.
 
+## Dois cliques para testar
+
+Feche o Unity deste projeto e dê dois cliques em **`Testar-Ferrugem.bat`**, na raiz do repositório. O console permanece aberto enquanto o launcher:
+
+1. Confere a versão do Editor indicada em `ProjectSettings/ProjectVersion.txt`.
+2. Verifica o conteúdo de `Assets`, `Packages` e `ProjectSettings`. Na primeira execução, ou quando esses arquivos mudarem, gera o build Windows atual.
+3. Inicia um servidor oculto em `127.0.0.1:17979` e espera a confirmação de escuta.
+4. Abre duas janelas de cliente, em 960 × 540, conectadas ao mesmo servidor.
+
+Use os botões de desconexão/reconexão da cena. Feche **as duas janelas do jogo** para encerrar o servidor e finalizar o teste. Mantenha o console aberto durante a sessão. Este executável ainda contém apenas diagnóstico de conexão, sem personagem controlável ou combate.
+
+O launcher só reutiliza um build quando existe um registro de validação compatível com os arquivos atuais e com os hashes do executável/código compilado. O registro `Builds/Windows/.verified-build.json` é criado apenas após compilação bem-sucedida, com código de saída 0; ele é ignorado pelo Git. A simples existência de `Ferrugem.exe` não é suficiente. A primeira compilação pode demorar; logs ficam em `Logs/Launcher/<data-hora>`.
+
+Se o Editor estiver usando o projeto, o launcher pede para fechá-lo. Não encerra o Editor do usuário nem remove locks. Uma porta 17979 já ocupada também interrompe a abertura do teste. Os processos encerrados automaticamente são somente os iniciados pelo próprio launcher.
+
+Para executar o teste automático completo, sem abrir as janelas do jogo nem pausar o `.bat` no final:
+
+```powershell
+.\Testar-Ferrugem.bat -Smoke
+```
+
+Para forçar uma compilação mesmo quando o registro está atual, use `-ForceBuild`. Se o Editor foi instalado fora da pasta padrão do Hub, informe `-EditorPath "D:\Unity\6000.3.24f1\Editor\Unity.exe"`; a versão ainda será conferida. Esses parâmetros podem ser combinados com `-Smoke`.
+
+Validação em 21/09/2026: `Testar-Ferrugem.bat -Smoke` compilou o cliente com encerramento normal do Unity e passou nas 23 verificações, retornando código 0. Evidência local: `Logs/Smoke/20260921-191513-863/result.json`. O launcher usa SHA-256 do .NET para funcionar também no Windows PowerShell 5.1.
+
 ## Gerar executáveis
 
 Feche o Editor deste projeto antes de executar um build em batchmode. Use exatamente Unity 6000.3.24f1. Ajuste somente o caminho do Editor se a instalação estiver em outra pasta.

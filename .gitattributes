@@ -12,6 +12,7 @@
 *.hlsl text eol=lf
 *.sh text eol=lf
 *.ps1 text eol=crlf
+*.bat text eol=crlf
 
 # O serializador Unity escreve valores YAML vazios com espaco apos ':'.
 *.unity whitespace=-blank-at-eol
