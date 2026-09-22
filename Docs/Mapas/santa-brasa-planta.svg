@@ -31,15 +31,15 @@
 <text x="326" y="620" transform="rotate(-30 326 620)" class="label halo">3 km</text>
 <text x="575" y="620" transform="rotate(30 575 620)" class="label halo">3 km</text>
 <!-- Acampamentos pequenos; símbolos esquemáticos, sem muralhas. -->
-<g class="camp"><path d="M458 281L470 258L482 281Z"/><rect x="453" y="273" width="9" height="8"/><rect x="480" y="274" width="11" height="7"/>
-<path d="M198 731L210.1924 708L222 731Z"/><rect x="193" y="723" width="9" height="8"/><rect x="220" y="724" width="11" height="7"/>
-<path d="M718 731L729.8076 708L742 731Z"/><rect x="713" y="723" width="9" height="8"/><rect x="740" y="724" width="11" height="7"/></g>
-<text x="470" y="219" text-anchor="middle" class="label halo">A · COOPERATIVA VÁRZEA</text>
-<text x="470" y="239" text-anchor="middle" class="small halo">Acampamento norte</text>
-<text x="210" y="765" text-anchor="middle" class="label halo">B · UNIÃO OFICINAS</text>
-<text x="210" y="785" text-anchor="middle" class="small halo">Acampamento sudoeste</text>
-<text x="730" y="765" text-anchor="middle" class="label halo">C · CARAVANA ASFALTO</text>
-<text x="730" y="785" text-anchor="middle" class="small halo">Acampamento sudeste</text>
+<g class="camp"><g fill="#376747"><path d="M458 281L470 258L482 281Z"/><rect x="453" y="273" width="9" height="8"/><rect x="480" y="274" width="11" height="7"/>
+</g><g fill="#9a4038"><path d="M198 731L210.1924 708L222 731Z"/><rect x="193" y="723" width="9" height="8"/><rect x="220" y="724" width="11" height="7"/>
+</g><g fill="#375c83"><path d="M718 731L729.8076 708L742 731Z"/><rect x="713" y="723" width="9" height="8"/><rect x="740" y="724" width="11" height="7"/></g></g>
+<text x="470" y="219" text-anchor="middle" class="label halo">A · MATO SEM CACHORRO</text>
+<text x="470" y="239" text-anchor="middle" class="small halo">Norte · Verde · A</text>
+<text x="210" y="765" text-anchor="middle" class="label halo">B · OS SEM COVA</text>
+<text x="210" y="785" text-anchor="middle" class="small halo">Sudoeste · Vermelho · B</text>
+<text x="730" y="765" text-anchor="middle" class="label halo">C · ÚLTIMA GOTA</text>
+<text x="730" y="785" text-anchor="middle" class="small halo">Sudeste · Azul · C</text>
 <text x="166" y="390" class="small halo">MATA / ESTUDO</text><text x="687" y="419" class="small halo">MATA / ESTUDO</text>
 <text x="414" y="856" class="small halo">MATA / ESTUDO</text>
 <text x="92" y="940" class="small halo">RELEVO PERIFÉRICO / ESTUDO</text>

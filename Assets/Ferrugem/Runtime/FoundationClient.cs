@@ -8,7 +8,7 @@ namespace Ferrugem
     // Connection diagnostics retained alongside the FPS prototype.
     public class FoundationClient : MonoBehaviour
     {
-        public static Rect HudRect => new Rect(16, 16, 440, 238);
+        public static Rect HudRect => new Rect(16, 16, Mathf.Min(440, Screen.width * 0.46f - 16), 258);
         private float quitAfter;
         private float cycleAfter;
         private float reconnectDelay;
@@ -81,15 +81,16 @@ namespace Ferrugem
                 if (connected) FerrugemBootstrap.RequestDisconnect();
                 else FerrugemBootstrap.RequestConnect();
             }
-            GUILayout.Label(FpsPresentation.HasPlayer ? "WASD: mover | Shift: correr | Mouse: olhar" : "Aguardando personagem do servidor...");
-            GUILayout.Label("Clique: capturar / atirar | Esc: liberar mouse");
+            GUILayout.Label(FpsPresentation.HasPlayer ? "WASD: mover | Shift: correr | Ctrl: agachar" : "Aguardando personagem do servidor...");
+            GUILayout.Label("Espaço: pular | Mouse direito: mirar");
+            GUILayout.Label("Mouse: olhar | Clique: capturar / atirar | Esc: soltar");
             GUILayout.Label("R: recarregar | G: lançar carga explosiva");
             if (FpsPresentation.HasPlayer)
             {
                 var combat = FpsPresentation.LocalCombat;
                 GUILayout.Label($"Vida {combat.Health} | Munição {combat.Ammo}/6 | Reserva {combat.Reserve} | Cargas {combat.Charges}");
                 if (combat.ReloadRemaining > 0) GUILayout.Label($"Recarregando: {combat.ReloadRemaining:F1}s");
-                else if (combat.ProtectionRemaining > 0) GUILayout.Label($"Proteção de respawn: {combat.ProtectionRemaining:F1}s");
+                else if (combat.ProtectionRemaining > 0) GUILayout.Label($"Proteção ao renascer: {combat.ProtectionRemaining:F1}s");
                 else GUILayout.Label("Infectados: cabeça ou explosão. Ataque é fatal.");
             }
             GUILayout.EndArea();
@@ -97,11 +98,11 @@ namespace Ferrugem
             if (FpsPresentation.LocalCombat.Life != 0)
             {
                 GUI.Box(new Rect(Screen.width / 2f - 210, Screen.height / 2f - 45, 420, 90),
-                    $"VOCÊ MORREU\nRespawn em {Mathf.CeilToInt(FpsPresentation.LocalCombat.RespawnRemaining)}s");
+                    $"VOCÊ MORREU\nRenasce em {Mathf.CeilToInt(FpsPresentation.LocalCombat.RespawnRemaining)}s");
             }
             else
             {
-                GUI.Label(new Rect(Screen.width / 2f - 4, Screen.height / 2f - 10, 20, 20), "+");
+                if (!FpsPresentation.IsAiming) GUI.Label(new Rect(Screen.width / 2f - 4, Screen.height / 2f - 10, 20, 20), "+");
                 if (Time.unscaledTime < FpsPresentation.HitFeedbackUntil && FpsPresentation.ConfirmedHit != 0)
                 {
                     GUI.color = FpsPresentation.ConfirmedHit == 2 ? new Color(1, 0.72f, 0.35f) : Color.white;

@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Ferrugem
@@ -16,6 +17,7 @@ namespace Ferrugem
         [GhostField] public float ReloadRemaining;
         [GhostField] public int ShotSequence;
         [GhostField] public int LastHit;
+        [GhostField] public float3 LastHitPosition;
         [GhostField] public int DeathSequence;
         public float Cooldown;
         public static CombatState Fresh => new CombatState { Health = 100, Ammo = 6, Reserve = 30, Charges = 2, ProtectionRemaining = 3 };
@@ -26,6 +28,8 @@ namespace Ferrugem
         [GhostField] public float AttackRemaining;
         public Entity Target;
         public float Recovery;
+        public float NavigationRemaining;
+        public float3 Direction;
     }
     public struct BarrelState : IComponentData { [GhostField] public int Alive; }
     public struct ChargeState : IComponentData { [GhostField] public float Fuse; }

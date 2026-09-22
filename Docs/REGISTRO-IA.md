@@ -51,3 +51,49 @@ foi utilizado e nenhum asset foi comprado. O usuário definiu arte própria para
 produção. O civil temporário CC0 mantém a autoria de Quaternius e não passa a ser
 conteúdo gerado por IA. A apresentação futura ao jogador será em PT-BR; a planta
 não modifica o campo técnico executável de 40 × 40 m.
+
+### Refinamento FPS — 22/09/2026, em validação
+
+IA assistiu a implementação de movimento e postura, mira de ferro, geometria
+compartilhada de rampa/escada, mãos originais e animação procedural, além de seis
+sons sintetizados por código em memória. Esses sons são sinais originais de teste,
+sem gravações nem serviço generativo externo. A geometria das mãos e os efeitos
+procedurais fazem parte do conteúdo assistido por IA e permanecem provisórios.
+O civil e suas animações originais continuam sendo de Quaternius sob CC0.
+
+IA também atualizou nomes e cores de facções aprovados pelo usuário nos documentos
+e no SVG original, renderizando novamente o PNG. A geometria da planta não mudou.
+Compilação, testes da versão 0.3.0 e inspeção visual/sonora ainda devem ser registrados
+após sua execução; resultados da 0.2.0 não representam essa validação.
+
+Primeira evidência do refinamento: preparação Unity com saída 0 e 19 verificações
+isoladas aprovadas em `Logs/prepare-motor.log`. Um agente também restaurou o
+`WslService` de parado/desativado para manual/em execução após recorrência de
+`0x80070422`, confirmando Ubuntu-24.04. Isso não declara aprovação dos builds,
+do smoke multiplayer ou da qualidade visual/sonora da versão 0.3.0.
+
+Na sequência, os builds Development passaram a incluir `NETCODE_DEBUG`, exigido
+pelo simulador do pacote. A regressão de combate aprovou 53 verificações com
+simulação ativa de 50 ms e 2% de perda por direção
+(`Logs/LinuxSmoke/20260922-071927-977/result.json`). O primeiro Motor com simulador
+ativo falhou no diagnóstico local de salto, apesar de saltos registrados no
+servidor e remotamente; o aceite do motor continua pendente. Eventos de áudio de
+tiro e recarga foram registrados nos dois clientes, sem equivaler a escuta humana.
+
+Após corrigir a instrumentação do salto, a mesma build final aprovou Motor (60),
+Combat (53) e FPS (27), respectivamente nos registros LinuxSmoke
+`20260922-081022-887`, `20260922-081128-406` e `20260922-081227-203`.
+Motor e Combat usaram simulador ativo de 50 ms e 2% de perda por direção; FPS não
+usou simulador. Uma tentativa anterior (`20260922-080234-192`) falhou na conexão
+do cliente B; o único retry, usando cache e sem mudar critérios, passou. A causa
+dessa falha transitória não foi identificada. O aviso `Leak Detected` no
+encerramento permanece conhecido. Áudio foi constatado por eventos no log,
+sem aceite de escuta humana; inspeção visual/sonora continua pendente.
+
+A inspeção visual parcial assistida por automação, na sessão LinuxSmoke
+`20260922-081331-105`, confirmou HUD em PT-BR, mãos/revólver, geometria visível e
+transições de morte/renascimento. O clique de captura manteve 6/6 munições.
+Infectados alcançando o ponto de nascimento causaram mortes repetidas e
+impediram concluir o tiro manual entre capturas. Não foi declarado aceite de
+mira, recarga, agachamento remoto, travessia ou qualidade sonora. O resultado é
+uma inspeção visual parcial, sem bloqueio gráfico observado.

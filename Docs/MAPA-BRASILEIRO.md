@@ -43,9 +43,9 @@ Posições propostas em coordenadas X/Z, em metros:
 
 | Base | X | Z |
 | --- | ---: | ---: |
-| Cooperativa da Várzea | 0 | 3.000 |
-| União das Oficinas | -2.598,076 | -1.500 |
-| Caravana do Asfalto | 2.598,076 | -1.500 |
+| Mato Sem Cachorro | 0 | 3.000 |
+| Os Sem Cova | -2.598,076 | -1.500 |
+| Última Gota | 2.598,076 | -1.500 |
 
 A faixa externa de mata e montanhas cabe entre cidade, acampamentos e limite do
 terreno. O traçado exato das estradas ainda será desenhado; curvas e relevo tornam
@@ -119,7 +119,7 @@ a área que pontua e os locais de coleta serão configurados e testados à parte
 
 ## Três acampamentos humildes
 
-Cooperativa da Várzea, União das Oficinas e Caravana do Asfalto continuam propostas
+Mato Sem Cachorro (verde), Os Sem Cova (vermelho) e Última Gota (azul) têm nomes e cores aprovados, com histórias propostas
 compatíveis com a lore. Suas diferenças aparecem na organização e nos materiais,
 com as mesmas oportunidades iniciais de combate e transporte.
 

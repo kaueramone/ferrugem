@@ -1,5 +1,7 @@
 # Fase 2 — Protótipo jogável
 
+> Estado atual: o [refinamento FPS 0.3.0](REFINAMENTO-FPS.md) acrescenta mira de ferro, postura, salto, rampa/escada, mãos e sons procedurais, com verificações automáticas aprovadas; inspeção visual parcial realizada, playtest completo e escuta pendentes. As limitações e resultados dos marcos 2A/2B abaixo descrevem as versões anteriores; a ausência histórica desses recursos não é a descrição da nova implementação.
+
 Esta fase começa depois da conexão validada entre clientes Windows e servidor
 Linux. Divisão de escopo acordada: primeiro movimentação FPS; depois combate e
 infectados; por último veículo e destruição. Dois clientes não comprovam capacidade
@@ -172,3 +174,15 @@ usuário, que continuou com a sessão aberta. Isso é verificação visual parci
 ainda não confirma o playtest completo de mira, balanceamento, antecipação/ataque
 normal do zombie, infecção por perseguição normal ou uso manual da carga.
 Esses itens continuam pendentes de confirmação do usuário.
+
+## Refinamento aprovado — versão 0.3.0
+
+O recorte seguinte acrescenta mira de ferro, agachamento, salto, aceleração/parada,
+rampa/escada, mãos e recarga procedurais, balanço da arma e áudio original de
+validação. Ver [escopo e critérios do refinamento](REFINAMENTO-FPS.md). A ausência
+de pulo, rampas, mãos e áudio descrita nos marcos anteriores corresponde àquelas
+versões. A build final 0.3.0 passou em 60 verificações Motor e 53 Combat com simulador ativo (50 ms e perda de 2% por direção), e 27 FPS sem simulador. Os caminhos dos resultados, falhas anteriores e limites estão no documento de refinamento. A inspeção visual parcial confirmou HUD, mãos/revólver e transições de morte/renascimento. Infectados atingindo o ponto de nascimento impediram concluir o tiro manual; mira, recarga, postura remota, travessia dos obstáculos e escuta continuam pendentes.
+
+As facções têm nomes e cores aprovados: Os Sem Cova (vermelho), Mato Sem Cachorro
+(verde) e Última Gota (azul). A planta conserva posições e medidas; as equipes ainda
+não foram implementadas na simulação multiplayer.

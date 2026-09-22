@@ -2,6 +2,9 @@ param(
     [switch]$Smoke,
     [switch]$Fps,
     [switch]$Combat,
+    [switch]$Motor,
+    [ValidateRange(0,2000)][int]$LatencyMs = 0,
+    [ValidateRange(0,100)][int]$PacketLoss = 0,
     [switch]$Manual,
     [switch]$ForceBuild,
     [string]$EditorPath,
@@ -16,9 +19,11 @@ $checks = [Collections.Generic.List[string]]::new()
 $runRoot = Join-Path $projectRoot ('Logs/LinuxSmoke/' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
 $launcherMutex = $null; $ownsMutex = $false; $server = $null; $linuxRecord = $null; $linuxWrapper = $null
 $wslAddress = $null; $exitCode = 0; $failure = $null
+$simulatorProfile = $null
 . (Join-Path $PSScriptRoot 'Build-Helpers.ps1')
 . (Join-Path $PSScriptRoot 'Assert-FpsSmoke.ps1')
 . (Join-Path $PSScriptRoot 'Assert-CombatSmoke.ps1')
+. (Join-Path $PSScriptRoot 'Assert-MotorSmoke.ps1')
 
 function Format-WslArgument([string]$Value) {
     # WSL interpreta switches diretamente; aspas sao necessarias somente em valores com espacos.
@@ -53,6 +58,7 @@ function Assert-LinuxTest([bool]$Condition, [string]$Message) {
 function Start-WindowsClient([string]$Name, [string[]]$ExtraArguments) {
     $clientLog = Join-Path $runRoot ($Name + '.log')
     $arguments = @('--client', '--address', $wslAddress, '--port', "$Port", '-logFile', (Quote-Argument $clientLog))
+    if ($simulatorProfile) { $arguments += @('--loadNetworkSimulatorJsonFile', (Quote-Argument $simulatorProfile)) }
     if ($ExtraArguments -and $ExtraArguments.Count -gt 0) { $arguments += $ExtraArguments }
     if ($Manual -and $Name -ne 'protocol-mismatch') {
         $arguments += @('-screen-fullscreen','0','-screen-width','960','-screen-height','540')
@@ -81,6 +87,16 @@ try {
     if ($Manual -and $Fps) { throw 'Use -Smoke -Fps para o teste automatico de movimentacao.' }
     if ($Manual -and $Combat) { throw 'Use -Smoke -Combat para o teste automatico de combate.' }
     if ($Fps -and $Combat) { throw 'Execute -Smoke -Fps e -Smoke -Combat separadamente.' }
+    if ($Manual -and $Motor) { throw 'Use -Smoke -Motor para o teste automatico de movimentacao refinada.' }
+    if ($Motor -and ($Fps -or $Combat)) { throw 'Execute cada cenario -Motor, -Fps ou -Combat separadamente.' }
+    if ($LatencyMs -gt 0 -or $PacketLoss -gt 0) {
+        # Netcode NetworkSimulatorSettings.cs: CLI development-only; ApplyMode.AllPackets = 2.
+        # Client simulator adds delay on send AND receive. Server remains unmodified.
+        $simulatorProfile = Join-Path $runRoot 'network-simulator.json'
+        $profile = [ordered]@{ MaxPacketCount=512; MaxPacketSize=1400; RandomSeed=42; Mode=2; PacketDelayMs=$LatencyMs; PacketJitterMs=0; PacketDropInterval=0; PacketDropPercentage=$PacketLoss; PacketDuplicationPercentage=0; FuzzFactor=0; FuzzOffset=0 }
+        [IO.File]::WriteAllText($simulatorProfile, ($profile | ConvertTo-Json), [Text.UTF8Encoding]::new($false))
+        Write-Host "Simulador nos clientes: $LatencyMs ms por direcao; perda de $PacketLoss% por direcao."
+    }
     $pathHasher = [Security.Cryptography.SHA256]::Create()
     try { $mutexSuffix = [BitConverter]::ToString($pathHasher.ComputeHash([Text.Encoding]::UTF8.GetBytes($projectRoot.ToLowerInvariant()))).Replace('-', '') }
     finally { $pathHasher.Dispose() }
@@ -111,6 +127,7 @@ try {
     $serverArguments = @('-d',$Distribution,'--exec','/bin/bash',$linuxWrapper,$linuxExePath,$wslAddress,"$Port",$linuxLog,$linuxRecord,$duration)
     if ($Fps) { $serverArguments += '--fps-smoke' }
     if ($Combat) { $serverArguments += '--combat-smoke' }
+    if ($Motor) { $serverArguments += '--motor-smoke' }
     $server = Start-Process -FilePath 'wsl.exe' -ArgumentList (($serverArguments | ForEach-Object { Format-WslArgument $_ }) -join ' ') -WindowStyle Hidden -RedirectStandardOutput (Join-Path $runRoot 'wsl.stdout.log') -RedirectStandardError (Join-Path $runRoot 'wsl.stderr.log') -PassThru
     $processes.Add($server)
     Wait-LinuxTestLog 'server' ('LISTEN_RESULT state=Succeeded endpoint=' + [regex]::Escape("${wslAddress}:$Port")) $server
@@ -120,11 +137,19 @@ try {
     if (-not $Manual) { $clientArgs = @('--quit-after','45') }
     if ($Fps) { $clientArgs += '--fps-smoke' }
     if ($Combat) { $clientArgs += '--combat-smoke' }
+    if ($Motor) { $clientArgs += '--motor-smoke' }
     $clientA = Start-WindowsClient 'client-a' $clientArgs
     $clientBArgs = @($clientArgs)
     if (-not $Manual) { $clientBArgs += @('--cycle-after','5','--reconnect-delay','2') }
     $clientB = Start-WindowsClient 'client-b' $clientBArgs
     Wait-LinuxTestLog 'client-a' '\[Ferrugem\] CONNECTED world=FerrugemClient' $clientA
+    if ($simulatorProfile) {
+        foreach ($entry in @(@{Name='client-a';Process=$clientA},@{Name='client-b';Process=$clientB})) {
+            $enabledPattern = "Enabled network simulator via command line arg '--loadNetworkSimulatorJsonFile'[^\r\n]*AllPackets with " + $LatencyMs + '[^\r\n]*ms!'
+            Wait-LinuxTestLog $entry.Name $enabledPattern $entry.Process 15
+            Assert-LinuxTest $true "$($entry.Name): Netcode confirmou ativacao real do simulador development ($LatencyMs ms por direcao)."
+        }
+    }
     if ($Manual) {
         Wait-LinuxTestLog 'client-b' '\[Ferrugem\] CONNECTED world=FerrugemClient' $clientB
         Wait-LinuxTestLog 'server' 'CONNECTION_COUNT world=FerrugemServer count=2\b' $server
@@ -174,6 +199,9 @@ try {
     if ($Combat) {
         Assert-CombatSmoke -ServerLog (Read-SharedLog (Join-Path $runRoot 'server.log')) -ClientALog (Read-SharedLog (Join-Path $runRoot 'client-a.log')) -ClientBLog (Read-SharedLog (Join-Path $runRoot 'client-b.log')) -Assert { param($condition, $message) Assert-LinuxTest $condition $message }
     }
+    if ($Motor) {
+        Assert-MotorSmoke -ServerLog (Read-SharedLog (Join-Path $runRoot 'server.log')) -ClientALog (Read-SharedLog (Join-Path $runRoot 'client-a.log')) -ClientBLog (Read-SharedLog (Join-Path $runRoot 'client-b.log')) -Assert { param($condition, $message) Assert-LinuxTest $condition $message }
+    }
 }
 catch { $failure = $_.Exception.Message; Write-Host ("ERRO: " + $failure) -ForegroundColor Red; $exitCode = 1 }
 finally {
@@ -188,7 +216,7 @@ finally {
     if (Test-Path -LiteralPath $runRoot) {
         $warnings = @()
         if ((Read-SharedLog (Join-Path $runRoot 'server.log')) -match 'Leak Detected') { $warnings += 'Unity reportou Leak Detected no encerramento; investigar antes de producao.' }
-        [ordered]@{ result = $(if ($exitCode -eq 0) { 'PASS' } else { 'FAIL' }); mode = $(if ($Manual) { 'manual' } else { 'smoke' }); error = $failure; distribution = $Distribution; address = $wslAddress; port = $Port; checks = $checks.ToArray(); warnings = $warnings; logDirectory = $runRoot } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $runRoot 'result.json') -Encoding UTF8
+        [ordered]@{ result = $(if ($exitCode -eq 0) { 'PASS' } else { 'FAIL' }); mode = $(if ($Manual) { 'manual' } else { 'smoke' }); error = $failure; latencyMsPerDirection = $LatencyMs; packetLossPercentPerDirection = $PacketLoss; simulatorProfile = $simulatorProfile; distribution = $Distribution; address = $wslAddress; port = $Port; checks = $checks.ToArray(); warnings = $warnings; logDirectory = $runRoot } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $runRoot 'result.json') -Encoding UTF8
     }
     if ($ownsMutex) { $launcherMutex.ReleaseMutex() }
     if ($launcherMutex) { $launcherMutex.Dispose() }

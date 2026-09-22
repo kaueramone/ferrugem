@@ -73,3 +73,12 @@ visuais, sem extração ou cópia de conteúdo. A produção terá arte própria
 conforme o [briefing do mapa brasileiro](MAPA-BRASILEIRO.md). O civil CC0 integrado
 continua apenas como recurso temporário de validação; não houve pedido de remoção
 imediata nem transferência de sua autoria para o projeto.
+
+## Refinamento 0.3.0: mãos e sons originais
+
+Mãos, dedos, punhos e manga foram montados com geometria original simples por
+código, com assistência de IA. Recuo e recarga são animações procedurais. Os sons
+são sintetizados em `AudioClip` em memória a partir de ruído e osciladores; não
+são gravações, áudio de terceiros ou saída de serviço generativo externo. São
+placeholders que exigem revisão visual e escuta. O arquivo Quaternius continua
+inalterado; agachamento aplica pose de ossos na apresentação e não altera a autoria.

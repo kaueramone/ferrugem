@@ -16,13 +16,15 @@ namespace Ferrugem.Editor
         private const string SubScenePath = "Assets/Scenes/FpsEntities.unity";
         private const string PrefabPath = "Assets/Ferrugem/Prefabs/FpsPlayer.prefab";
 
+        public static void ValidateMotor() { ValidateFoundation(); FpsMotorSmoke.Run(); }
+
         public static void ValidateFoundation()
         {
             Debug.Log($"[Ferrugem] PHASE0_COMPILE_OK editor={Application.unityVersion} netcode={typeof(ClientServerBootstrap).Assembly.GetName().Name}");
             EditorSettings.serializationMode = SerializationMode.ForceText;
             PlayerSettings.companyName = "Ferrugem Project";
             PlayerSettings.productName = "Ferrugem";
-            PlayerSettings.bundleVersion = "0.2.0";
+            PlayerSettings.bundleVersion = "0.3.0";
             PlayerSettings.runInBackground = true;
             PrepareFps();
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
@@ -99,7 +101,10 @@ namespace Ferrugem.Editor
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
             {
                 scenes = new[] { ScenePath }, target = target, subtarget = (int)subtarget,
-                locationPathName = output, options = BuildOptions.Development
+                locationPathName = output, options = BuildOptions.Development,
+                // Netcode 1.14 NetworkSimulatorSettings/DefaultDriverConstructor require this
+                // explicit symbol; DEVELOPMENT_BUILD alone does not include their simulator.
+                extraScriptingDefines = new[] { "NETCODE_DEBUG" }
             });
             if (report.summary.result != BuildResult.Succeeded)
                 throw new Exception($"Build failed: {report.summary.result}, {report.summary.totalErrors} errors");

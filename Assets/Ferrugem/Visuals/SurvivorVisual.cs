@@ -22,6 +22,12 @@ namespace Ferrugem.Visuals
         private bool infected;
         private float threat;
         private Transform modelTransform;
+        private bool crouched, poseApplied;
+        private float crouchBlend;
+        private readonly Transform[] crouchBones = new Transform[7];
+        private readonly Vector3[] posePositions = new Vector3[7];
+        private readonly Quaternion[] poseRotations = new Quaternion[7];
+        public void SetCrouched(bool value) => crouched = value;
 
         public static GameObject Create(int ownerId)
         {
@@ -53,6 +59,10 @@ namespace Ferrugem.Visuals
             var model = Instantiate(asset, transform, false);
             model.name = "Civilian (Quaternius CC0)";
             modelTransform = model.transform;
+            var names = new[] { "Hips", "UpperLeg.L", "LowerLeg.L", "Foot.L", "UpperLeg.R", "LowerLeg.R", "Foot.R" };
+            foreach (var bone in model.GetComponentsInChildren<Transform>())
+                for (int index = 0; index < names.Length; ++index)
+                    if (bone.name == names[index]) crouchBones[index] = bone;
             foreach (var collider in model.GetComponentsInChildren<Collider>()) Destroy(collider);
 
             var surface = Resources.Load<Material>("Ferrugem/PrototypeSurface");
@@ -132,6 +142,12 @@ namespace Ferrugem.Visuals
 
         private void Update()
         {
+            if (poseApplied)
+            {
+                for (int i = 0; i < crouchBones.Length; ++i)
+                    if (crouchBones[i] != null) { crouchBones[i].localPosition = posePositions[i]; crouchBones[i].localRotation = poseRotations[i]; }
+                poseApplied = false;
+            }
             if (!graph.IsValid()) return;
             blend = Mathf.MoveTowards(blend, movementSpeed > 0.1f ? 1 : 0, Time.deltaTime * 8);
             mixer.SetInputWeight(0, 1 - blend);
@@ -143,6 +159,35 @@ namespace Ferrugem.Visuals
             if (walk.GetTime() >= walkClip.length && walkClip.length > 0) walk.SetTime(walk.GetTime() % walkClip.length);
         }
 
+        private void LateUpdate()
+        {
+            if (infected) return;
+            crouchBlend = Mathf.MoveTowards(crouchBlend, crouched ? 1 : 0, Time.deltaTime * 8);
+            if (crouchBlend <= 0) return;
+            foreach (var bone in crouchBones) if (bone == null) return;
+            for (int i = 0; i < crouchBones.Length; ++i)
+            { posePositions[i] = crouchBones[i].localPosition; poseRotations[i] = crouchBones[i].localRotation; }
+            var leftFoot = crouchBones[3].position; var rightFoot = crouchBones[6].position;
+            var leftRotation = crouchBones[3].rotation; var rightRotation = crouchBones[6].rotation;
+            crouchBones[0].position -= Vector3.up * (0.60f * crouchBlend);
+            BendLeg(crouchBones[1], crouchBones[2], crouchBones[3], leftFoot);
+            BendLeg(crouchBones[4], crouchBones[5], crouchBones[6], rightFoot);
+            crouchBones[3].rotation = leftRotation; crouchBones[6].rotation = rightRotation;
+            poseApplied = true;
+        }
+        private void BendLeg(Transform thigh, Transform shin, Transform foot, Vector3 target)
+        {
+            var a = Vector3.Distance(thigh.position, shin.position);
+            var b = Vector3.Distance(shin.position, foot.position);
+            var delta = target - thigh.position;
+            var d = Mathf.Clamp(delta.magnitude, 0.001f, a + b - 0.001f);
+            var direction = delta.normalized;
+            var bend = Vector3.ProjectOnPlane(transform.forward, direction).normalized;
+            var along = (a * a - b * b + d * d) / (2 * d);
+            var knee = thigh.position + direction * along + bend * Mathf.Sqrt(Mathf.Max(0, a * a - along * along));
+            thigh.rotation = Quaternion.FromToRotation(shin.position - thigh.position, knee - thigh.position) * thigh.rotation;
+            shin.rotation = Quaternion.FromToRotation(foot.position - shin.position, target - shin.position) * shin.rotation;
+        }
         private void OnDestroy()
         {
             if (graph.IsValid()) graph.Destroy();

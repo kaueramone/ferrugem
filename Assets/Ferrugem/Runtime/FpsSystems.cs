@@ -24,7 +24,7 @@ namespace Ferrugem
                 buffer.SetComponent(player, new GhostOwner { NetworkId = id.Value });
                 var spawn = FpsArena.Spawn(id.Value);
                 buffer.SetComponent(player, LocalTransform.FromPosition(spawn));
-                buffer.SetComponent(player, new FpsPlayer { Spawn = spawn });
+                buffer.SetComponent(player, new FpsPlayer { Spawn = spawn, Grounded = 1 });
                 buffer.AppendToBuffer(connection, new LinkedEntityGroup { Value = player });
                 buffer.AddComponent<FpsSpawned>(connection);
                 Debug.Log($"[Ferrugem] FPS_SPAWN owner={id.Value}");
@@ -58,13 +58,12 @@ namespace Ferrugem
                 var command = input.ValueRO;
                 if (!math.all(math.isfinite(command.Move)) || !math.isfinite(command.Yaw) || !math.isfinite(command.Pitch))
                     continue;
-                var move = command.Move / math.max(1, math.length(command.Move));
-                var yaw = math.radians(command.Yaw % 360);
-                var rotation = quaternion.RotateY(yaw);
-                var velocity = math.rotate(rotation, new float3(move.x, 0, move.y)) * (command.Sprint != 0 ? 6 : 3.5f);
-                transform.ValueRW.Position = FpsArena.Move(transform.ValueRO.Position, velocity * dt);
-                transform.ValueRW.Rotation = rotation;
-                player.ValueRW.Pitch = math.clamp(command.Pitch, -85, 85);
+                var motor = player.ValueRO;
+                var position = transform.ValueRO.Position;
+                FpsMotor.Step(ref motor, ref position, command, dt);
+                player.ValueRW = motor;
+                transform.ValueRW.Position = position;
+                transform.ValueRW.Rotation = quaternion.RotateY(math.radians(command.Yaw % 360));
             }
         }
     }

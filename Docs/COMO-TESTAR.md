@@ -11,7 +11,7 @@ Feche o Unity deste projeto e dê dois cliques em **`Testar-Ferrugem.bat`**, na 
 3. Inicia o servidor Linux no Ubuntu-24.04/WSL 2, descobre seu IPv4 privado e espera a confirmação de escuta na porta UDP 17981.
 4. Abre duas janelas de cliente, em 960 × 540, conectadas ao mesmo servidor.
 
-Clique na janela para capturar o mouse: WASD movimenta, Shift corre, mouse olha e Esc libera o cursor. Alterne entre as janelas para observar o outro personagem. Use os botões de desconexão/reconexão com o cursor livre. Feche **as duas janelas do jogo** para encerrar o servidor e finalizar o teste. Mantenha o console aberto durante a sessão. O campo tem 40 × 40 m e dois obstáculos. O marco 2B acrescenta clique para disparar, R para recarregar e G para lançar carga; sua validação está registrada separadamente abaixo. Pulo e veículos permanecem pendentes.
+Clique na janela para capturar o mouse: WASD movimenta, Shift corre, mouse olha e Esc libera o cursor. Alterne entre as janelas para observar o outro personagem. Use os botões de desconexão/reconexão com o cursor livre. Feche **as duas janelas do jogo** para encerrar o servidor e finalizar o teste. Mantenha o console aberto durante a sessão. O campo tem 40 × 40 m e dois obstáculos. O marco 2B acrescenta clique para disparar, R para recarregar e G para lançar carga; sua validação está registrada separadamente abaixo. Na versão 0.3.0, Ctrl agacha, Espaço pula e botão direito mira; há rampa, escada e passagem baixa. Veículos permanecem pendentes.
 
 O launcher só reutiliza um build quando existe um registro de validação compatível com os arquivos atuais e com os hashes do executável/código compilado. Os registros `.verified-build.json` das pastas de build são criados apenas após compilação bem-sucedida, com código de saída 0; são ignorados pelo Git. A simples existência de `Ferrugem.exe` não é suficiente. A primeira compilação pode demorar; logs da sessão Linux ficam em `Logs/LinuxSmoke/<data-hora>`.
 
@@ -184,8 +184,7 @@ O destino deve ser novo e externo ao projeto. Feche o Editor da origem e aguarde
    provocada por outro jogador não deve criar um infectado neste recorte.
 
 Este roteiro é um critério de aceite, não uma declaração de testes já realizados.
-O marco 2B passou em 51 verificações automáticas Linux na versão 0.2.0, seguido de 27 de regressão FPS; [evidências e limites](FASE-2.md) estão registrados. A inspeção visual parcial foi registrada, e o playtest completo do combate pelo usuário continua pendente. A apresentação atual
-não tem áudio, mãos animadas ou arte final para a arma e os infectados.
+O marco 2B passou em 51 verificações automáticas Linux na versão 0.2.0, seguido de 27 de regressão FPS; [evidências e limites](FASE-2.md) estão registrados. A inspeção visual parcial foi registrada, e o playtest completo do combate pelo usuário continua pendente. A versão 0.2.0 não tinha áudio nem mãos; a 0.3.0 acrescenta efeitos e mãos procedurais provisórios, ainda sem arte final.
 
 Teste automático específico de combate contra o servidor Linux:
 
@@ -198,3 +197,9 @@ reais sem depender do foco da janela e verifica um cenário de dano/infecção
 injetado no servidor. A perseguição normal dos zombies fica fora desse cenário;
 os passos manuais acima continuam necessários. Não use `-Combat` no modo manual:
 o combate normal já estará disponível nas duas janelas.
+
+## Refinamento 0.3.0
+
+Consulte [controles, áudio, critérios de inspeção e simulação de rede](REFINAMENTO-FPS.md).
+O modo específico é `Testar-Ferrugem.bat -Smoke -Motor`. Execute os modos `-Motor`,
+`-Fps` e `-Combat` separadamente. Na build final 0.3.0, Motor passou em 60 verificações e Combat em 53 com simulador ativo (50 ms e perda de 2% por direção); FPS passou em 27 sem simulador. Isso não substitui os passos manuais nem a escuta dos efeitos.

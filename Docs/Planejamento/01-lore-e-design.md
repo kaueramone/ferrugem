@@ -16,11 +16,13 @@ Frase de apresentação: **“Segure o centro. Traga o que sobrou. Mantenha sua 
 
 ## Três comunidades
 
+Nomes e cores aprovados: **Os Sem Cova (vermelho)**, **Mato Sem Cachorro (verde)** e **Última Gota (azul)**. A organização em três equipes ainda não está implementada na cena técnica.
+
 | Comunidade | Origem e motivação | Identidade visual |
 |---|---|---|
-| Cooperativa da Várzea | Agricultores e famílias que protegem sementes, água e tratores. Querem administrar o abastecimento por cotas. | Verde desbotado, lona, roupas de trabalho; símbolo de sulcos |
-| União das Oficinas | Mecânicos, eletricistas e operários que mantêm geradores e bombas. Defendem que quem conserta deve comandar. | Ocre, metal reaproveitado, coletes de oficina; símbolo de chave |
-| Caravana do Asfalto | Motoristas e refugiados que vivem de transporte e trocas. Querem reabrir as rotas sem monopólio. | Azul gasto, placas e faixas de caminhão; símbolo de estrada |
+| Mato Sem Cachorro | Agricultores e famílias que protegem sementes, água e tratores. Querem administrar o abastecimento por cotas. | Verde desbotado, lona, roupas de trabalho; símbolo de sulcos |
+| Os Sem Cova | Mecânicos, eletricistas e operários que mantêm geradores e bombas. Defendem que quem conserta deve comandar. | Vermelho gasto, metal reaproveitado, coletes de oficina; símbolo de chave |
+| Última Gota | Motoristas e refugiados que vivem de transporte e trocas. Querem reabrir as rotas sem monopólio. | Azul gasto, placas e faixas de caminhão; símbolo de estrada |
 
 Mesmas capacidades de combate no início. Facções se distinguem por história, silhueta e áudio, sem bônus que produzam uma escolha dominante. Cores acompanhadas de ícones para identificação acessível. Não usar uniformes modernos ou copiar personagens, marcas e veículos de outras obras.
 

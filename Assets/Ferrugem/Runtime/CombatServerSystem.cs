@@ -29,11 +29,32 @@ namespace Ferrugem
             }
             distance = near; return true;
         }
+        private static bool ClipPlane(float3 origin, float3 direction, float3 normal, float bound, ref float near, ref float far)
+        {
+            float denom = math.dot(normal, direction), numerator = bound - math.dot(normal, origin);
+            if (math.abs(denom) < .00001f) return numerator >= 0;
+            float t = numerator / denom;
+            if (denom < 0) near = math.max(near, t); else far = math.min(far, t);
+            return near <= far;
+        }
+        public static bool RayRamp(float3 origin, float3 direction, out float distance)
+        {
+            float near = 0, far = 60; float k = FpsArena.RampHeight / (FpsArena.RampMaxXZ.y - FpsArena.RampMinXZ.y);
+            bool hit = ClipPlane(origin,direction,new float3(-1,0,0),-FpsArena.RampMinXZ.x,ref near,ref far)
+                && ClipPlane(origin,direction,new float3(1,0,0),FpsArena.RampMaxXZ.x,ref near,ref far)
+                && ClipPlane(origin,direction,new float3(0,0,-1),-FpsArena.RampMinXZ.y,ref near,ref far)
+                && ClipPlane(origin,direction,new float3(0,0,1),FpsArena.RampMaxXZ.y,ref near,ref far)
+                && ClipPlane(origin,direction,new float3(0,-1,0),0,ref near,ref far)
+                && ClipPlane(origin,direction,new float3(0,1,-k),-k*FpsArena.RampMinXZ.y,ref near,ref far);
+            distance = near; return hit;
+        }
         public static float CoverDistance(float3 origin, float3 direction)
         {
             float closest = 60;
-            foreach (var obstacle in FpsArena.Obstacles)
-                if (RayBox(origin, direction, new float3(obstacle.x - 1.5f, 0, obstacle.y - 1), new float3(obstacle.x + 1.5f, 2.4f, obstacle.y + 1), out var d)) closest = math.min(closest, d);
+            foreach (var solid in FpsArena.Solids)
+                if (RayBox(origin, direction, solid.Min, solid.Max, out var d)) closest = math.min(closest, d);
+            if (RayRamp(origin, direction, out float rampDistance)) closest = math.min(closest, rampDistance);
+            if (direction.y < -.00001f) closest = math.min(closest, -origin.y / direction.y);
             return closest;
         }
         public static bool Clear(float3 from, float3 to)
@@ -92,7 +113,7 @@ namespace Ferrugem
         private CombatPrefabs prefabs;
         private float smokeTime;
         private bool liveMutation;
-        protected override void OnCreate() { RequireForUpdate<CombatPrefabs>(); smoke = Arguments.Has("--combat-smoke"); passive = smoke || Arguments.Has("--fps-smoke"); }
+        protected override void OnCreate() { RequireForUpdate<CombatPrefabs>(); smoke = Arguments.Has("--combat-smoke"); passive = smoke || Arguments.Has("--fps-smoke") || Arguments.Has("--motor-smoke"); }
         protected override void OnUpdate()
         {
             prefabs = SystemAPI.GetSingleton<CombatPrefabs>();
@@ -114,7 +135,7 @@ namespace Ferrugem
                 CombatRules.Tick(ref state, dt);
                 if (CombatRules.Respawn(ref state, dt))
                 {
-                    var t = EntityManager.GetComponentData<LocalTransform>(player); t.Position = EntityManager.GetComponentData<FpsPlayer>(player).Spawn; EntityManager.SetComponentData(player, t);
+                    var t = EntityManager.GetComponentData<LocalTransform>(player); var reset = EntityManager.GetComponentData<FpsPlayer>(player); t.Position = reset.Spawn; reset.Velocity = float3.zero; reset.Grounded = 1; reset.Crouched = 0; reset.Aiming = 0; EntityManager.SetComponentData(player, reset); EntityManager.SetComponentData(player, t);
                     Debug.Log($"[Ferrugem] COMBAT_RESPAWN owner={Owner(player)}");
                 }
                 if (reloading && state.ReloadRemaining == 0 && state.Life == 0) Debug.Log($"[Ferrugem] COMBAT_RELOAD owner={Owner(player)} ammo={state.Ammo}");
@@ -123,7 +144,8 @@ namespace Ferrugem
                 if (state.Life == 0 && math.isfinite(input.Yaw) && math.isfinite(input.Pitch) && math.abs(input.Pitch) <= 85)
                 {
                     var position = EntityManager.GetComponentData<LocalTransform>(player).Position;
-                    var origin = position + new float3(0, CombatRules.Eye, 0);
+                    var stance = EntityManager.GetComponentData<FpsPlayer>(player);
+                    var origin = position + new float3(0, FpsMotor.Eye(stance.Crouched != 0), 0);
                     var direction = CombatRules.Direction(input.Yaw, input.Pitch);
                     if (input.Fire.IsSet && CombatRules.SpendShot(ref state))
                     {
@@ -138,7 +160,7 @@ namespace Ferrugem
                         state.Charges--; state.ProtectionRemaining = 0;
                         var horizontal = math.normalizesafe(new float3(direction.x, 0, direction.z), new float3(0, 0, 1));
                         float range = math.min(6, math.max(0, CombatRules.CoverDistance(origin, horizontal) - .4f));
-                        var destination = position + horizontal * range; destination.xz = math.clamp(destination.xz, new float2(-18.5f), new float2(18.5f)); destination.y = .15f;
+                        var destination = position + horizontal * range; destination.xz = math.clamp(destination.xz, new float2(-18.5f), new float2(18.5f)); destination.y = FpsArena.Ground(destination, origin.y, 0) + .15f;
                         Spawn(prefabs.Charge, destination);
                     }
                 }
@@ -177,10 +199,12 @@ namespace Ferrugem
                 if (!human && !zombie && !barrel) continue;
                 if (human && EntityManager.GetComponentData<CombatState>(e).Life != 0 || zombie && EntityManager.GetComponentData<ZombieState>(e).Alive == 0 || barrel && EntityManager.GetComponentData<BarrelState>(e).Alive == 0) continue;
                 var p = EntityManager.GetComponentData<LocalTransform>(e).Position;
-                var min = p + new float3(-.3f, 0, -.3f); var max = p + new float3(.3f, barrel ? 1.1f : 1.85f, .3f);
+                bool crouched = human && EntityManager.GetComponentData<FpsPlayer>(e).Crouched != 0;
+                var min = p + new float3(-.3f, 0, -.3f); var max = p + new float3(.3f, barrel ? 1.1f : FpsMotor.Height(crouched), .3f);
                 if (CombatRules.RayBox(origin, direction, min, max, out var distance) && distance < closest)
-                { closest = distance; target = e; head = !barrel && (origin + direction * distance).y >= p.y + 1.45f; }
+                { closest = distance; target = e; head = !barrel && (origin + direction * distance).y >= p.y + FpsMotor.HeadMin(crouched); }
             }
+            var shooterState = EntityManager.GetComponentData<CombatState>(shooter); shooterState.LastHitPosition = origin + direction * closest; EntityManager.SetComponentData(shooter, shooterState);
             if (target == Entity.Null) return 0;
             if (EntityManager.HasComponent<ZombieState>(target))
             { var z = EntityManager.GetComponentData<ZombieState>(target); CombatRules.HurtZombie(ref z, head, false); EntityManager.SetComponentData(target, z); }
@@ -260,33 +284,48 @@ namespace Ferrugem
                     if (best <= 1.1f * 1.1f && z.Recovery == 0 && CombatRules.Clear(t.Position + new float3(0, 1, 0), destination + new float3(0, 1, 0))) { z.Target = nearest; z.AttackRemaining = .8f; }
                     else if (best > 1.1f * 1.1f)
                     {
-                        var direction = Steer(t.Position, destination); t.Position = FpsArena.Move(t.Position, direction * (dt * .9f));
+                        z.NavigationRemaining -= dt;
+                        if (z.NavigationRemaining <= 0) { z.Direction = Steer(t.Position, destination); z.NavigationRemaining = .4f; }
+                        var direction = z.Direction; t.Position = FpsArena.Move(t.Position, direction * (dt * .9f));
                         if (math.lengthsq(direction) > .001f) t.Rotation = quaternion.LookRotationSafe(direction, math.up());
                     }
                 }
                 EntityManager.SetComponentData(e, z); EntityManager.SetComponentData(e, t);
             }
         }
-        // Visibility graph over inflated obstacle corners: small fixed arena, no NavMesh or Unity Physics dependency.
+        // A bounded visibility graph for this authored arena, including ramp entry and the low tunnel.
         private static float3 Steer(float3 from, float3 to)
         {
-            if (WalkClear(from, to)) return math.normalizesafe(to - from);
-            var points = new float3[10]; points[0] = from; points[1] = to; int index = 2;
+            if (WalkClear(from, to)) return math.normalizesafe(new float3(to.x-from.x,0,to.z-from.z));
+            var points = new float3[22]; points[0] = from; points[1] = to; int index = 2;
             foreach (var o in FpsArena.Obstacles) foreach (int x in new[] { -1, 1 }) foreach (int z in new[] { -1, 1 }) points[index++] = new float3(o.x + x * 1.9f, 0, o.y + z * 1.4f);
-            var cost = new float[10]; var previous = new int[10]; var visited = new bool[10]; for (int i = 0; i < 10; i++) { cost[i] = float.MaxValue; previous[i] = -1; } cost[0] = 0;
-            for (int step = 0; step < 10; step++)
+            foreach (int x in new[] { -1, 1 }) foreach (float z in new[] { 3.6f, 8.4f }) points[index++] = new float3(x*2.4f,0,z);
+            points[index++] = new float3(9.5f,0,-6.5f); points[index++] = new float3(14.5f,0,-6.5f);
+            points[index++] = new float3(12,0,-6.5f); points[index++] = new float3(12,1.2f,-1);
+            points[index++] = new float3(-14.5f,0,-6.5f); points[index++] = new float3(-9.5f,0,-6.5f);
+            points[index++] = new float3(-12,0,-6.5f); points[index++] = new float3(-12,1,-1);
+            int count = points.Length; var cost = new float[count]; var previous = new int[count]; var visited = new bool[count];
+            for (int i = 0; i < count; i++) { cost[i] = float.MaxValue; previous[i] = -1; } cost[0] = 0;
+            for (int step = 0; step < count; step++)
             {
-                int current = -1; for (int i = 0; i < 10; i++) if (!visited[i] && (current < 0 || cost[i] < cost[current])) current = i;
+                int current = -1; for (int i = 0; i < count; i++) if (!visited[i] && (current < 0 || cost[i] < cost[current])) current = i;
                 if (current < 0 || cost[current] == float.MaxValue) break; visited[current] = true; if (current == 1) break;
-                for (int j = 0; j < 10; j++) if (!visited[j] && WalkClear(points[current], points[j])) { float candidate = cost[current] + math.distance(points[current], points[j]); if (candidate < cost[j]) { cost[j] = candidate; previous[j] = current; } }
+                for (int j = 0; j < count; j++) if (!visited[j] && WalkClear(points[current], points[j])) { float candidate = cost[current] + math.distance(points[current], points[j]); if (candidate < cost[j]) { cost[j] = candidate; previous[j] = current; } }
             }
-            int next = 1; if (previous[next] < 0) return float3.zero; while (previous[next] > 0) next = previous[next]; return math.normalizesafe(points[next] - from);
+            int next = 1; if (previous[next] < 0) return float3.zero; while (previous[next] > 0) next = previous[next];
+            return math.normalizesafe(new float3(points[next].x-from.x,0,points[next].z-from.z));
         }
         private static bool WalkClear(float3 from, float3 to)
         {
-            var delta = to - from; float length = math.length(delta); if (length < .001f) return true;
-            foreach (var o in FpsArena.Obstacles) if (CombatRules.RayBox(from, delta / length, new float3(o.x - 1.86f, -1, o.y - 1.36f), new float3(o.x + 1.86f, 2, o.y + 1.36f), out float d) && d < length) return false;
-            return true;
+            float length = math.distance(from.xz, to.xz); if (length < .001f) return true;
+            int steps = (int)math.ceil(length/.2f); var step = new float3(to.x-from.x,0,to.z-from.z)/steps; var current = from;
+            for (int i=0;i<steps;i++)
+            {
+                var moved = FpsArena.Move(current,step);
+                if (math.distance(moved.xz,(current+step).xz) > .01f) return false;
+                current = moved;
+            }
+            return math.abs(current.y-to.y)<.35f;
         }
     }
 }
